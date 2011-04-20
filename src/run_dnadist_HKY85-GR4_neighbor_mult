@@ -1,0 +1,66 @@
+#!/bin/bash
+
+# $1 is the nex file that is phylip compatible to read in
+# This will use JC model in dnadist, then call neighbor to find the tree.
+# Lastly this script will clean up the fragmented-multi-line tree outputed
+# by neighbor. (Why did they do that???)
+
+# $2 is the number of data sets to do at once
+
+#rm -f dnadist_tmp_infile_mult dnadist_tmp_outfile_mult neighbor_tmp_outfile_mult neighbor_tmp_outtree_mult neighbor_input_mult dnadist_JC_input_mult
+
+# Controls where the temporary files are located
+myPrefix="/tmp/"
+myPrefixSed="\/tmp\/"
+
+# Create these files so that we get the expected menu's in dnadist and neighbor.
+rm -f infile
+touch outtree outfile
+
+if [ $# -ne 2 ] 
+then
+    echo "Must specifify phylip ready file to proccess and number of data"
+    exit 0
+fi
+
+myrand=$RANDOM
+myrand=${myrand}$RANDOM
+while [ $(( (myrand + 1)/2 )) -eq $(( myrand/2 )) ] || [ -e ${myPrefix}neighbor_input_mult${myrand}$$ ] || [ -e ${myPrefix}dnadist_HKY85-GR4_input_mult${myrand}$$ ]
+do
+    myrand=$RANDOM
+    myrand=${myrand}$RANDOM
+done
+
+cp $1 ${myPrefix}dnadist_tmp_infile_mult${myrand}$$
+
+#echo "My rand $myrand"
+
+sed "s/RANDOM/$myrand/" neighbor_input_mult_TEMPLATE | sed "s/NUMALIGN/$2/" | sed "s/_mult/_mult${myrand}$$/" | sed "s/dnadist_tmp/${myPrefixSed}dnadist_tmp/" | sed "s/neighbor_tmp/${myPrefixSed}neighbor_tmp/" > ${myPrefix}neighbor_input_mult${myrand}$$
+
+sed "s/NUMALIGN/$2/" dnadist_HKY85-GR4_input_mult_TEMPLATE | sed "s/_mult/_mult${myrand}$$/" | sed "s/dnadist_tmp/${myPrefixSed}dnadist_tmp/" > ${myPrefix}dnadist_HKY85-GR4_input_mult${myrand}$$
+
+
+dnadist < ${myPrefix}dnadist_HKY85-GR4_input_mult${myrand}$$ 2>&1 > /dev/null
+neighbor < ${myPrefix}neighbor_input_mult${myrand}$$ 2>&1 > /dev/null
+#dnadist < dnadist_JC_input_mult${myrand}
+#neighbor < neighbor_input_mult${myrand} 
+
+#myout=`awk '{all=all $0} END {print all}' neighbor_tmp_outtree_mult`
+#echo "tree rep $myout"
+#cat neighbor_tmp_outtree_mult
+echo "#NEXUS"
+echo "begin trees;"
+sleep 1
+awk 'BEGIN {treeNumber=0} {all=all $0} /;/ {treeNumber++;print "tree rep_" treeNumber " = " all;all=""}' ${myPrefix}neighbor_tmp_outtree_mult${myrand}$$
+echo "end;"
+
+tempAwkOut=`awk 'BEGIN {treeNumber=0} {all=all $0} /;/ {treeNumber++;print "tree rep_" treeNumber " = " all;all=""}' ${myPrefix}neighbor_tmp_outtree_mult${myrand}$$`
+if [ "x$tempAwkOut" = "x" ]
+then
+    echo "NOTHING OUTPUTED BY AWK COMMAND"
+fi
+
+
+#sleep 10
+
+rm -f ${myPrefix}dnadist_tmp_infile_mult${myrand}$$ ${myPrefix}dnadist_tmp_outfile_mult${myrand}$$ ${myPrefix}neighbor_tmp_outfile_mult${myrand}$$ ${myPrefix}neighbor_tmp_outtree_mult${myrand}$$ ${myPrefix}neighbor_input_mult${myrand}$$ ${myPrefix}dnadist_HKY85-GR4_input_mult${myrand}$$

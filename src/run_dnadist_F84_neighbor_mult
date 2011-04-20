@@ -1,0 +1,95 @@
+#!/bin/bash
+
+# $1 is the nex file that is phylip compatible to read in
+# This will use F84 model in dnadist, then call neighbor to find the tree.
+# Lastly this script will clean up the fragmented-multi-line tree output
+# by neighbor. (Why did they do that???)
+
+# $2 is the number of data sets to do at once
+
+#rm -f dnadist_tmp_infile_mult dnadist_tmp_outfile_mult neighbor_tmp_outfile_mult neighbor_tmp_outtree_mult neighbor_input_mult dnadist_JC_input_mult
+
+# Control if we save failed files and where
+saveFailFiles=0
+saveFailFilesLocation=/home/dcha223/local/tmp/run_F84_error_files/
+
+# Controls where the temporary files are located
+myPrefix="/tmp/"
+myPrefixSed="\/tmp\/"
+
+# Create these files so that we get the expected menu's in dnadist and neighbor.
+rm -f infile
+touch outtree outfile
+
+if [ $# -ne 2 ] 
+then
+    echo "Must specifify phylip ready file to proccess and number of data"
+    exit 0
+fi
+
+awkFailed=1
+if [ $awkFailed -eq 1 ]
+then 
+    awkFailed=0
+
+    myrand=$RANDOM
+    myrand=${myrand}$RANDOM
+    while [ $(( (myrand + 1)/2 )) -eq $(( myrand/2 )) ] || [ -e ${myPrefix}neighbor_input_mult${myrand}$$ ] || [ -e ${myPrefix}dnadist_F84-GR4_input_mult${myrand}$$ ]
+    do
+        myrand=$RANDOM
+        myrand=${myrand}$RANDOM
+    done
+    
+    cp $1 ${myPrefix}dnadist_tmp_infile_mult${myrand}$$
+    
+    #echo "My rand $myrand"
+    
+    sed "s/RANDOM/$myrand/" neighbor_input_mult_TEMPLATE | sed "s/NUMALIGN/$2/" | sed "s/_mult/_mult${myrand}$$/" | sed "s/dnadist_tmp/${myPrefixSed}dnadist_tmp/" | sed "s/neighbor_tmp/${myPrefixSed}neighbor_tmp/" > ${myPrefix}neighbor_input_mult${myrand}$$
+    
+    sed "s/NUMALIGN/$2/" dnadist_F84-GR4_input_mult_TEMPLATE | sed "s/_mult/_mult${myrand}$$/" | sed "s/dnadist_tmp/${myPrefixSed}dnadist_tmp/" > ${myPrefix}dnadist_F84-GR4_input_mult${myrand}$$
+    
+    
+    dnadist < ${myPrefix}dnadist_F84-GR4_input_mult${myrand}$$ 2>&1 > /dev/null
+    neighbor < ${myPrefix}neighbor_input_mult${myrand}$$ 2>&1 > /dev/null
+    #dnadist < dnadist_JC_input_mult${myrand}
+    #neighbor < neighbor_input_mult${myrand} 
+    
+    if [ ! -f ${myPrefix}neighbor_tmp_outtree_mult${myrand}$$ ]
+    then
+        echo "${myPrefix}neighbor_tmp_outtree_mult${myrand}$$ does not exist."
+        touch neighborfiledoesntexist.txt
+        exit 0
+    fi
+    
+    
+    tempAwkOut=`awk 'BEGIN {treeNumber=0} {all=all $0} /;/ {treeNumber++;print "tree rep_" treeNumber " = " all;all=""}' ${myPrefix}neighbor_tmp_outtree_mult${myrand}$$`
+    if [ "x$tempAwkOut" = "x" ]
+    then
+        awkFailed=1
+        #echo "NOTHING OUTPUTED BY AWK COMMAND"
+    fi
+
+    if [ $awkFailed -eq 1 ] && [ $saveFailFiles -eq 1 ]
+    then
+        cp ${myPrefix}dnadist_tmp_infile_mult${myrand}$$  $saveFailFilesLocation    
+        cp ${myPrefix}dnadist_tmp_outfile_mult${myrand}$$ $saveFailFilesLocation
+        cp ${myPrefix}neighbor_tmp_outfile_mult${myrand}$$ $saveFailFilesLocation
+        cp ${myPrefix}neighbor_tmp_outtree_mult${myrand}$$ $saveFailFilesLocation
+        cp ${myPrefix}neighbor_input_mult${myrand}$$ $saveFailFilesLocation
+        cp ${myPrefix}dnadist_F84-GR4_input_mult${myrand}$$ $saveFailFilesLocation
+    fi
+
+    # Clean up files regardless
+    rm -f ${myPrefix}dnadist_tmp_infile_mult${myrand}$$ ${myPrefix}dnadist_tmp_outfile_mult${myrand}$$ ${myPrefix}neighbor_tmp_outfile_mult${myrand}$$ ${myPrefix}neighbor_tmp_outtree_mult${myrand}$$ ${myPrefix}neighbor_input_mult${myrand}$$ ${myPrefix}dnadist_F84-GR4_input_mult${myrand}$$
+
+fi
+
+# Only output if we can output something useful.
+echo "#NEXUS"
+echo "begin trees;"
+sleep 1
+echo $tempAwkOut | sed 's/;/;\n/g'
+echo "end;"
+
+#sleep 10
+

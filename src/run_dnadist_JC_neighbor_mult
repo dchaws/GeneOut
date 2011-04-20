@@ -1,0 +1,42 @@
+#!/bin/bash
+
+# $1 is the nex file that is phylip compatible to read in
+# This will use JC model in dnadist, then call neighbor to find the tree.
+# Lastly this script will clean up the fragmented-multi-line tree outputed
+# by neighbor. (Why did they do that???)
+
+# $2 is the number of data sets to do at once
+
+#rm -f dnadist_tmp_infile_mult dnadist_tmp_outfile_mult neighbor_tmp_outfile_mult neighbor_tmp_outtree_mult neighbor_input_mult dnadist_JC_input_mult
+
+if [ $# -ne 2 ] 
+then
+    echo "Must specifify phylip ready file to proccess and number of data"
+    exit 0
+fi
+
+myrand=$RANDOM
+while [ $(( (myrand + 1)/2 )) -eq $(( myrand/2 )) ] 
+do
+    myrand=$RANDOM
+done
+
+cp $1 dnadist_tmp_infile_mult${myrand}
+
+#echo "My rand $myrand"
+
+sed "s/RANDOM/$myrand/" neighbor_input_mult_TEMPLATE | sed "s/NUMALIGN/$2/" | sed "s/_mult/_mult${myrand}/" > neighbor_input_mult${myrand}
+
+sed "s/NUMALIGN/$2/" dnadist_JC_input_mult_TEMPLATE | sed "s/_mult/_mult${myrand}/" > dnadist_JC_input_mult${myrand}
+
+dnadist < dnadist_JC_input_mult${myrand} 2>&1 > /dev/null
+neighbor < neighbor_input_mult${myrand} 2>&1 > /dev/null
+#dnadist < dnadist_JC_input_mult${myrand}
+#neighbor < neighbor_input_mult${myrand} 
+
+#myout=`awk '{all=all $0} END {print all}' neighbor_tmp_outtree_mult`
+#echo "tree rep $myout"
+#cat neighbor_tmp_outtree_mult
+awk 'BEGIN {treeNumber=0} {all=all $0} /;/ {treeNumber++;print "tree rep_" treeNumber " = " all;all=""}' neighbor_tmp_outtree_mult${myrand}
+
+rm -f dnadist_tmp_infile_mult${myrand} dnadist_tmp_outfile_mult${myrand} neighbor_tmp_outfile_mult${myrand} neighbor_tmp_outtree_mult${myrand} neighbor_input_mult${myrand} dnadist_JC_input_mult${myrand}

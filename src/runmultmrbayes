@@ -1,0 +1,63 @@
+#!/bin/bash
+
+# Can handle up to 9 intances
+
+if test 1 -le $#
+then
+    echo -n "Executing "
+    echo $1
+    mb $1 2>&1 > /dev/null &
+fi
+if test 2 -le $#
+then
+    echo -n "Executing "
+    echo $2
+    mb $2 2>&1 > /dev/null &
+fi
+if test 3 -le $#
+then
+    echo -n "Executing "
+    echo $3
+    mb $3 2>&1 > /dev/null &
+fi
+if test 4 -le $#
+then
+    echo -n "Executing "
+    echo $4
+    mb $4 2>&1 > /dev/null &
+fi
+if test 5 -le $#
+then
+    echo -n "Executing "
+    echo $5
+    mb $5 2>&1 > /dev/null &
+fi
+if test 6 -le $#
+then
+    echo -n "Executing "
+    echo $6
+    mb $6 2>&1 > /dev/null &
+fi
+if test 7 -le $#
+then
+    echo -n "Executing "
+    echo $7
+    mb $7 2>&1 > /dev/null &
+fi
+if test 8 -le $#
+then
+    echo -n "Executing "
+    echo $8
+    mb $8 2>&1 > /dev/null &
+fi
+if test 9 -le $#
+then
+    echo -n "Executing "
+    echo $9
+    mb $9 2>&1 > /dev/null &
+fi
+
+echo -n "Waiting until "
+echo -n $# 
+echo " MrBayes runs are finished"
+wait

@@ -1,0 +1,54 @@
+#!/bin/bash
+
+# This will take in a file with multiple phylip format and run them through fastdnaml
+# $1 is the file of phylip format inputs. $2 is the number of alignments.
+
+myPrefix="/tmp/"
+myPrefixSed="\/tmp\/"
+
+# Save current pwd
+curpwd=`pwd`
+
+# First get the number of alignments for each data set
+
+numAlign=`head -n 1 $1 | awk '{print $1}'`
+
+# Calculate the number of data sets and verify.
+
+firstLine=`head -n 1 $1`
+#echo \"$firstLine\"
+firstField=`echo $firstLine | awk '{print $1}'`
+
+numDatasets=`grep "${firstField} *[0-9]" $1 | wc -l`
+numSeq=`head -n 1 $1 | awk '{print $1}'`
+
+#numDatasets=`wc -l $1 | awk '{print $1}'`
+#numDatasets=$(( numDatasets / ( numAlign  + 1)))
+if [ $numDatasets -ne $2 ] 
+then
+    echo 'Argument $2 does not match calculated data sets'
+    echo '$2' " $2"
+    echo '$numDatasets' " $numDatasets"
+    exit -1
+fi
+numAlignPlusOne=$(( numAlign + 1 ))
+echo $numAlignPlusOne
+
+
+# Change to tmp directory for capturing
+#cp $1 $myPrefix
+#echo awk "BEGIN {linenum=0;} {if ((linenum % $numAlignPlusOne) == 0 && linenum != 0) {printf(\"\n%s\n\",\$0);} else {print \$0;};linenum++}" ${curpwd}/${1} > tempalign$$.phy
+awk "BEGIN {linenum=0;} {if ((linenum % $numAlignPlusOne) == 0 && linenum != 0) {printf(\"\n%s\n\",\$0);} else {print \$0;};linenum++}" ${1} > ${myPrefix}tempalign$$.phy
+cd $myPrefix
+#pwd
+PhyML_3.0 -i tempalign$$.phy -n $numDatasets 2>&1 > /dev/null
+echo "#NEXUS"
+echo "begin trees;"
+awk 'BEGIN {linenum=0}; {printf ("   tree rep_%d = %s\n",linenum,$0);linenum++}' tempalign$$.phy_phyml_tree.txt | sed 's/)[^:]*:/):/g'
+echo "end;"
+
+# Clear up the phyml files
+#rm -f tempalign$$.phy*
+
+cd $curpwd
+#pwd

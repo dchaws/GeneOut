@@ -1,0 +1,4 @@
+#!/bin/bash
+
+#./run_dnadist_JC_neighbor_mult $*
+./run_dnadist_HKY85-GR4_neighbor_mult $*
