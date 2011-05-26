@@ -424,7 +424,7 @@ int main (int argc, char **argv)
             if (DEBUG_OUTPUT >= 0){
                 cout << "**** Performing alignments statistical test ****" << endl;
                 if (myGeneOutParam.doJackknife == 1){
-                    cout << "    Using Jackknifing." << endl;
+                    cout << "    Using Tree reconstruction & Bootstrapping." << endl;
                 }
                 if (myGeneOutParam.doMB == 1){
                     cout << "    Using Mr Bayes." << endl;
@@ -913,7 +913,7 @@ int main (int argc, char **argv)
             if (DEBUG_OUTPUT >= 0){
                 cout << "**** Performing genes statistical test ****" << endl;
                 if (myGeneOutParam.doJackknife == 1){
-                    cout << "    Using Jackknifing." << endl;
+                    cout << "    Using Tree reconstruction & Bootstrapping." << endl;
                 }
                 if (myGeneOutParam.doMB == 1){
                     cout << "    Using Mr Bayes." << endl;
