@@ -361,7 +361,7 @@ int main (int argc, char **argv)
     int groupOneCount=0;
     int groupTwoCount=0;
 
-    // This is the standard method.
+    // This is the method without permutation.
     if (myGeneOutParam.statTest != 1){
         if (myGeneOutParam.noTreeCalc != 1 && myGeneOutParam.doMB == 1){
             if (DEBUG_OUTPUT >= 0){
@@ -674,6 +674,7 @@ int main (int argc, char **argv)
             averagedResults /= myGeneOutParam.numStatTests;
             if (DEBUG_OUTPUT >= 0){
                 cout << "pval/myGeneOutParam.numStatTests = " << pval/myGeneOutParam.numStatTests << endl;
+                cout << "p-value: " << pval/myGeneOutParam.numStatTests << endl;
                 cout << "Averaged Separation Percentage: " << averageSeparation << endl;
                 if (myGeneOutParam.SampleParam.doDiffMeans == 1){
                     averagedResults.print("Averaged Stat Test");
@@ -692,8 +693,8 @@ int main (int argc, char **argv)
                 }
                 cout << endl;
 
-                cout << "MWW pvalue: " << MannWhitneyWilcoxon(sepValuesOne,sepValuesTwo) << endl;
-                cout << "Min pvalue: " << pvalueMin(sepValuesOne, sepValuesTwo) << endl;
+//                cout << "MWW pvalue: " << MannWhitneyWilcoxon(sepValuesOne,sepValuesTwo) << endl;
+//                cout << "Min pvalue: " << pvalueMin(sepValuesOne, sepValuesTwo) << endl;
             }
         }
 //        _______                  ____        _       
@@ -877,6 +878,7 @@ int main (int argc, char **argv)
             averagedResults /= myGeneOutParam.numStatTests;
             if (DEBUG_OUTPUT >= 0){
                 cout << "pval/myGeneOutParam.numStatTests = " << pval/myGeneOutParam.numStatTests << endl;
+                cout << "p-value: " << pval/myGeneOutParam.numStatTests << endl;
                 cout << "Averaged Separation Percentage: " << averageSeparation << endl;
                 if (myGeneOutParam.SampleParam.doDiffMeans == 1){
                     averagedResults.print("Averaged Stat Test");
@@ -894,8 +896,8 @@ int main (int argc, char **argv)
                     cout << *lit << setw(5) << " ";
                 }
                 cout << endl;
-                cout << "MWW pvalue: " << MannWhitneyWilcoxon(sepValuesOne,sepValuesTwo) << endl;
-                cout << "Min pvalue: " << pvalueMin(sepValuesOne, sepValuesTwo) << endl;
+//                cout << "MWW pvalue: " << MannWhitneyWilcoxon(sepValuesOne,sepValuesTwo) << endl;
+//                cout << "Min pvalue: " << pvalueMin(sepValuesOne, sepValuesTwo) << endl;
             }
         }
 //                                _        _   
@@ -1102,6 +1104,7 @@ int main (int argc, char **argv)
             averagedResults /= myGeneOutParam.numStatTests;
             if (DEBUG_OUTPUT >= 0){
                 cout << "pval/myGeneOutParam.numStatTests = " << pval/myGeneOutParam.numStatTests << endl;
+                cout << "p-value: " << pval/myGeneOutParam.numStatTests << endl;
                 cout << "Averaged Separation Percentage: " << averageSeparation << endl;
                 if (myGeneOutParam.SampleParam.doDiffMeans == 1){
                     averagedResults.print("Averaged Stat Test");
@@ -1119,8 +1122,8 @@ int main (int argc, char **argv)
                     cout << *lit << setw(5) << " ";
                 }
                 cout << endl;
-                cout << "MWW pvalue: " << MannWhitneyWilcoxon(sepValuesOne,sepValuesTwo) << endl;
-                cout << "Min pvalue: " << pvalueMin(sepValuesOne, sepValuesTwo) << endl;
+//                cout << "MWW pvalue: " << MannWhitneyWilcoxon(sepValuesOne,sepValuesTwo) << endl;
+//                cout << "Min pvalue: " << pvalueMin(sepValuesOne, sepValuesTwo) << endl;
             }
         }
     } // END STAT TEST

@@ -508,7 +508,7 @@ void GeneOutParameters::init ()
     MultIndParam.alignToTreeCommand = "./run_dnadist_neighbor_mult"; // Default
 
     SampleParam.doSVM = 1;
-    SampleParam.doDiffMeans = 1;
+    SampleParam.doDiffMeans = 0;
     SampleParam.SVM_sampleUniform = 1; // Default. Should sample uniformly from each alignment.
     SampleParam.SVM_sampleSize = -1; // Default. Should calculate based on dimension.
     SampleParam.SVM_resampleSize = -1; // Default. Should calculate based on dimension.
