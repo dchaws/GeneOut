@@ -52,7 +52,7 @@ neighbor < ${myPrefix}neighbor_input_mult${myrand}$$ 2>&1 > /dev/null
 echo "#NEXUS"
 echo "begin trees;"
 sleep 1
-awk 'BEGIN {treeNumber=0} {all=all $0} /;/ {treeNumber++;print "tree rep_" treeNumber " = " all;all=""}' ${myPrefix}neighbor_tmp_outtree_mult${myrand}$$
+awk 'BEGIN {treeNumber=0} {all=all $0} /;/ {treeNumber++;print "tree rep_" treeNumber " = " all "newline";all=""}' ${myPrefix}neighbor_tmp_outtree_mult${myrand}$$
 echo "end;"
 
 tempAwkOut=`awk 'BEGIN {treeNumber=0} {all=all $0} /;/ {treeNumber++;print "tree rep_" treeNumber " = " all;all=""}' ${myPrefix}neighbor_tmp_outtree_mult${myrand}$$`

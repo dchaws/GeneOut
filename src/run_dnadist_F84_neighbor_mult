@@ -37,13 +37,11 @@ then
     awkFailed=0
 
     myrand=$RANDOM
-    myrand=${myrand}$RANDOM
     dnadistInputFile=${myPrefix}/dnadist_F84-GR4_input_mult_${myrand}$$
     neighborInputFile=${myPrefix}/neighbor_input_mult_${myrand}$$
     while [ $(( (myrand + 1)/2 )) -eq $(( myrand/2 )) ] || [ -e $dnadistInputFile ] || [ -e $neighborInputFile ]
     do
         myrand=$RANDOM
-        myrand=${myrand}$RANDOM
         dnadistInputFile=${myPrefix}/dnadist_F84-GR4_input_mult_${myrand}$$
         neighborInputFile=${myPrefix}/neighbor_input_mult_${myrand}$$
     done
@@ -95,7 +93,7 @@ then
     
     
     # This might be OS specific. Especially the \r part. Works on Mac OS X
-    tempAwkOut=`awk 'BEGIN {treeNumber=0} {all=all $0} /;/ {treeNumber++;print "tree rep_" treeNumber " = " all "\r";all=""}' ${myPrefix}neighbor_tmp_outtree_mult${myrand}$$`
+    tempAwkOut=`awk 'BEGIN {treeNumber=0} {all=all $0} /;/ {treeNumber++;print "tree rep_" treeNumber " = " all ;all=""}' ${myPrefix}neighbor_tmp_outtree_mult${myrand}$$`
     if [ "x$tempAwkOut" = "x" ]
     then
         awkFailed=1
@@ -111,20 +109,21 @@ then
         cp ${myPrefix}neighbor_input_mult${myrand}$$ $saveFailFilesLocation
         cp ${myPrefix}dnadist_F84-GR4_input_mult${myrand}$$ $saveFailFilesLocation
     fi
+    # Actually output the trees.
 
     # Clean up files regardless
-    rm -f $dnadistInputFile $neighborInputFile ${myPrefix}neighbor_tmp_outfile_mult${myrand}$$ ${myPrefix}neighbor_tmp_outtree_mult${myrand}$$ ${myPrefix}neighbor_input_mult${myrand}$$ ${myPrefix}dnadist_tmp_outfile_mult${myrand}$$
+    rm -f $dnadistInputFile $neighborInputFile ${myPrefix}neighbor_tmp_outfile_mult${myrand}$$ ${myPrefix}neighbor_input_mult${myrand}$$ ${myPrefix}dnadist_tmp_outfile_mult${myrand}$$
 
 fi
 
 # Only output if we can output something useful.
 echo "#NEXUS"
 echo "begin trees;"
-sleep 1
-#echo $tempAwkOut | sed 's/;/;\n/g'
-echo $tempAwkOut
-
+#sleep 1
+#echo $tempAwkOut | sed 's/;/;\n/g' #  This doesn't work well on Mac
+awk 'BEGIN {treeNumber=0} {all=all $0} /;/ {treeNumber++;print "tree rep_" treeNumber " = " all ;all=""}' ${myPrefix}neighbor_tmp_outtree_mult${myrand}$$
 echo "end;"
 
+rm -rf ${myPrefix}neighbor_tmp_outtree_mult${myrand}$$
 #sleep 10
 
