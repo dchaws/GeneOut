@@ -1,6 +1,6 @@
 // $Rev: 774 $ $Date: 2011-02-09 17:53:15 -0500 (Wed, 09 Feb 2011) $
 
-/** \file alignments.h */
+/** \file alignment.h */
 #ifndef ALIGNMENTS_H
 #define ALIGNMENTS_H 1
 
@@ -28,34 +28,34 @@ using namespace::std;
 /// Class to hold a set of aligned sequence of characters.
 ///
 
-class Alignments 
+class Alignment 
 {
 public:
-    Alignments ();
-    //Alignments (Alignments &someAlignments);
-    Alignments (int tmp_ntax, int tmp_nchar, string tmp_AlignmentsName, list <string> tmp_taxaNames, char **tmp_alignments, int tmp_alignmentsAllocated );
-    ~Alignments ();
-    Alignments (string fileName); // opens the filename string
-    Alignments (string fileName, int setInputFormat); // opens filename with said input format.
-    Alignments (std::istream &in);
+    Alignment ();
+    //Alignment (Alignment &someAlignment);
+    Alignment (int tmp_ntax, int tmp_nchar, string tmp_AlignmentName, list <string> tmp_taxaNames, char **tmp_alignment, int tmp_alignmentAllocated );
+    ~Alignment ();
+    Alignment (string fileName); // opens the filename string
+    Alignment (string fileName, int setInputFormat); // opens filename with said input format.
+    Alignment (std::istream &in);
     void readFile (string fileName); 
 
-    friend std::ostream& operator << (std::ostream &out, const Alignments &someAlignments);
-    friend std::istream& operator >> (std::istream &in, Alignments &someAlignments);
+    friend std::ostream& operator << (std::ostream &out, const Alignment &someAlignment);
+    friend std::istream& operator >> (std::istream &in, Alignment &someAlignment);
 
-    Alignments & operator = (const Alignments &someAlignments);
-    bool operator == (const Alignments &someAlignments);
-    // Concat, x + y concats alignments x + y and returns the new alignments
-    Alignments operator + (const Alignments &someAlignmens);
-    // Concats someAlignments to this
-    Alignments & operator += (const Alignments &someAlignments);
+    Alignment & operator = (const Alignment &someAlignment);
+    bool operator == (const Alignment &someAlignment);
+    // Concat, x + y concats alignment x + y and returns the new alignment
+    Alignment operator + (const Alignment &someAlignmens);
+    // Concats someAlignment to this
+    Alignment & operator += (const Alignment &someAlignment);
     char & operator() (unsigned row, unsigned col); 
     char operator() (unsigned row, unsigned col) const; 
 
     const int get_ntax();
     const int get_nchar();
     const list <string> get_taxaNames();
-    const string get_AlignmentsName();
+    const string get_AlignmentName();
     void setOutputFormat (int format);
     void setInputFormat (int format);
 
@@ -67,46 +67,46 @@ public:
     void printSequenceDivergencePairs();
 
 
-    // This return k contigious columns of alignments (with wraping) start at
+    // This return k contigious columns of alignment (with wraping) start at
     // position pos
-    Alignments getContiguousColumns(int pos, int k);
+    Alignment getContiguousColumns(int pos, int k);
 
     // This will return an alignment with ntax taxa and k*count columns.
     // It will form it by randomly selecting k contiguous columns and appending them
     // to the result
-    Alignments getJackknife(int k, int count);
+    Alignment getJackknife(int k, int count);
     // This will do the same as above but count = floor(nchar/k);
-    Alignments getJackknife(int k);
+    Alignment getJackknife(int k);
 
-    // This will go through all elements of alignments and delete any columns
+    // This will go through all elements of alignment and delete any columns
     // that do not contain 'A', 'T', 'C' or 'G'
-    Alignments delColumnsWithMissingData();
+    Alignment delColumnsWithMissingData();
 
     // Returns the subset of characters given by someTaxa
-    Alignments getTaxaSubset(set <unsigned> someTaxa);
+    Alignment getTaxaSubset(set <unsigned> someTaxa);
 
 private:
     void init();
-    // Delete the alignments and set alignments to 0
-    void deleteAlignments();
+    // Delete the alignment and set alignment to 0
+    void deleteAlignment();
 
-    // Allocates alignments data structure to be char[nchar][ntax]
-    void allocateAlignments();
-    // Allocates alignments data structure to be char[tmp_nchar][tmp_ntax]
-    void allocateAlignments(int tmp_ntax, int tmp_nchar);
-    string AlignmentsName;
+    // Allocates alignment data structure to be char[nchar][ntax]
+    void allocateAlignment();
+    // Allocates alignment data structure to be char[tmp_nchar][tmp_ntax]
+    void allocateAlignment(int tmp_ntax, int tmp_nchar);
+    string AlignmentName;
     list <string> taxaNames;
     int ntax; // Number of taxa
     int nchar; // Number of characters or base pairs
     int outputFormat; // See above for formats
     int inputFormat;  // See above for formats
 
-    // alignments when allocated is char[nchar][ntax]
+    // alignment when allocated is char[nchar][ntax]
     // We store in this format to facilitate jackknifing, where we take subsets 
     // of columns;
-    char **alignments;
+    char **alignment;
 
-    int alignmentsAllocated; // 0 means not allocated, 1 means allocated.
+    int alignmentAllocated; // 0 means not allocated, 1 means allocated.
                              // Should only be set by allocate and delete functions.
 };
 

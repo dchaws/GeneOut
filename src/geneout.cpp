@@ -12,7 +12,7 @@
 #include <list>
 #include <set>
 #include <math.h>
-#include "alignments.h"
+#include "alignment.h"
 #include "debugoutput.h"
 #include "tempprefix.h"
 #include "kernelmethod.h"
@@ -201,87 +201,87 @@ int main (int argc, char **argv)
 
     // If we are working on alignments, we read them all in here.
     int numTaxa = 0;
-    list <int> inputAlignmentsLengths;
-    list <int> inputAlignmentsLengthsOne;
-    list <int> inputAlignmentsLengthsTwo;
-    list <Alignments *> inputAlignments;
-    list <Alignments *> origInputAlignments;
-    list <Alignments *> AlignmentsOne, AlignmentsTwo;
-    list <Alignments *> origAlignmentsOne, origAlignmentsTwo;
-    Alignments         *AlignmentsOneConcat, *AlignmentsTwoConcat;
+    list <int> inputAlignmentLengths;
+    list <int> inputAlignmentLengthsOne;
+    list <int> inputAlignmentLengthsTwo;
+    list <Alignment *> inputAlignment;
+    list <Alignment *> origInputAlignment;
+    list <Alignment *> AlignmentOne, AlignmentTwo;
+    list <Alignment *> origAlignmentOne, origAlignmentTwo;
+    Alignment         *AlignmentOneConcat, *AlignmentTwoConcat;
     if (myGeneOutParam.noTreeCalc != 1){
         if (myGeneOutParam.concatGroups != 1) {
             for (list<string>::const_iterator lsit=myGeneOutParam.inputFileNames.begin();lsit!=myGeneOutParam.inputFileNames.end();lsit++){
-                Alignments *newAlignments = new Alignments(*lsit);
-                numTaxa = newAlignments->get_ntax ();
-                inputAlignmentsLengths.push_back(newAlignments->get_nchar()); 
-                inputAlignments.push_back(newAlignments);
-                //cout << *newAlignments;
+                Alignment *newAlignment = new Alignment(*lsit);
+                numTaxa = newAlignment->get_ntax ();
+                inputAlignmentLengths.push_back(newAlignment->get_nchar()); 
+                inputAlignment.push_back(newAlignment);
+                //cout << *newAlignment;
             }
             // Again, default is to compare the first input vs the rest.
             // Lets us myGeneOutParam.numGroupOne
-            list <Alignments *>::iterator lait=inputAlignments.begin();
+            list <Alignment *>::iterator lait=inputAlignment.begin();
             int groupAddCount = 0;
-            AlignmentsOneConcat = new Alignments;
+            AlignmentOneConcat = new Alignment;
             int firstConcatRunOne = 1;
             while (groupAddCount < myGeneOutParam.numGroupOne){
                 if (firstConcatRunOne == 1){
                     firstConcatRunOne=0;
-                    *AlignmentsOneConcat = *(*lait);
+                    *AlignmentOneConcat = *(*lait);
                 }
                 else {
-                    *AlignmentsOneConcat += *(*lait);
+                    *AlignmentOneConcat += *(*lait);
                 }
-                inputAlignmentsLengthsOne.push_back((*lait)->get_nchar());
-                AlignmentsOne.push_back(*lait);
-                // Make copy of data and store in origAlignmentsOne.
+                inputAlignmentLengthsOne.push_back((*lait)->get_nchar());
+                AlignmentOne.push_back(*lait);
+                // Make copy of data and store in origAlignmentOne.
                 // Don't want to just put in *lait since they would both point
                 // to the same data which is cleared later.
-                Alignments *newAlignments = new Alignments;
-                (*newAlignments) = *(*lait);
-                origAlignmentsOne.push_back(newAlignments);
-                origInputAlignments.push_back(newAlignments);
+                Alignment *newAlignment = new Alignment;
+                (*newAlignment) = *(*lait);
+                origAlignmentOne.push_back(newAlignment);
+                origInputAlignment.push_back(newAlignment);
 
                 lait++;
                 groupAddCount++;
             }
 
-            // Put rest in AlignmentsTwo
-            AlignmentsTwoConcat = new Alignments;
+            // Put rest in AlignmentTwo
+            AlignmentTwoConcat = new Alignment;
             int firstConcatRunTwo = 1;
-            while(lait!=inputAlignments.end()){
+            while(lait!=inputAlignment.end()){
                 if (firstConcatRunTwo == 1){
                     firstConcatRunTwo=0;
-                    *AlignmentsTwoConcat = *(*lait);
+                    *AlignmentTwoConcat = *(*lait);
                 }
                 else {
-                    *AlignmentsTwoConcat += *(*lait);
+                    *AlignmentTwoConcat += *(*lait);
                 }
-                inputAlignmentsLengthsTwo.push_back((*lait)->get_nchar());
-                AlignmentsTwo.push_back(*lait);
-                // Make copy of data and store in origAlignmentsTwo.
+                inputAlignmentLengthsTwo.push_back((*lait)->get_nchar());
+                AlignmentTwo.push_back(*lait);
+                // Make copy of data and store in origAlignmentTwo.
                 // Don't want to just put in *lait since they would both point
                 // to the same data which is cleared later.
-                Alignments *newAlignments = new Alignments;
-                *newAlignments = *(*lait);
-                origAlignmentsTwo.push_back(newAlignments);
-                origInputAlignments.push_back(newAlignments);
+                Alignment *newAlignment = new Alignment;
+                *newAlignment = *(*lait);
+                origAlignmentTwo.push_back(newAlignment);
+                origInputAlignment.push_back(newAlignment);
                 lait++;
             }
 
             
             ////Concat all the alignments together, except the first one.
-            //list <Alignments *>::iterator lait=inputAlignments.begin();
+            //list <Alignment *>::iterator lait=inputAlignment.begin();
             //int newColSizeCount = (int)floor((*lait)->get_nchar()/myGeneOutParam.JackknifeParam.jackknifeColSize);
             ////cout << "newColSizeCount " << newColSizeCount << endl;
             ////cout << *(*lait);
             //// Why just the first! Use myGeneOutParam.numGroupOne
             //lait++;
             ////cout << *(*lait);
-            //Alignments *allConcatMinusFirst = new Alignments;
+            //Alignment *allConcatMinusFirst = new Alignment;
             //*allConcatMinusFirst = *(*lait); // Copy second alignment
             //lait++;
-            //while(lait!=inputAlignments.end()){
+            //while(lait!=inputAlignment.end()){
             //    //cout << *(*lait);
             //    *allConcatMinusFirst += *(*lait);
             //    lait++;
@@ -292,46 +292,46 @@ int main (int argc, char **argv)
         }
         else if (myGeneOutParam.concatGroups == 1) {
             int fileCount = 0;
-            Alignments *groupOneAlignmentsConcat;
-            Alignments *groupTwoAlignmentsConcat;
+            Alignment *groupOneAlignmentConcat;
+            Alignment *groupTwoAlignmentConcat;
             int firstGroupOne = 1;
             int firstGroupTwo = 1;
             for (list<string>::const_iterator lsit=myGeneOutParam.inputFileNames.begin();lsit!=myGeneOutParam.inputFileNames.end();lsit++){
                 if (fileCount < myGeneOutParam.numGroupOne) {
                     if (firstGroupOne == 1){
                         firstGroupOne = 0;
-                        groupOneAlignmentsConcat = new Alignments(*lsit);
+                        groupOneAlignmentConcat = new Alignment(*lsit);
                     }
-                    Alignments *newAlignments = new Alignments(*lsit);
-                    *groupOneAlignmentsConcat += *newAlignments;
-                    delete newAlignments;
+                    Alignment *newAlignment = new Alignment(*lsit);
+                    *groupOneAlignmentConcat += *newAlignment;
+                    delete newAlignment;
                 }
                 else {
                     if (firstGroupTwo == 1){
                         firstGroupTwo = 0;
-                        groupTwoAlignmentsConcat = new Alignments(*lsit);
+                        groupTwoAlignmentConcat = new Alignment(*lsit);
                     }
-                    Alignments *newAlignments = new Alignments(*lsit);
-                    *groupTwoAlignmentsConcat += *newAlignments;
-                    delete newAlignments;
+                    Alignment *newAlignment = new Alignment(*lsit);
+                    *groupTwoAlignmentConcat += *newAlignment;
+                    delete newAlignment;
                 }
                 fileCount++;
             }
-            inputAlignmentsLengths.push_back(groupOneAlignmentsConcat->get_nchar()); 
-            inputAlignmentsLengths.push_back(groupTwoAlignmentsConcat->get_nchar()); 
-            inputAlignments.push_back(groupOneAlignmentsConcat);
-            inputAlignments.push_back(groupTwoAlignmentsConcat);
-            AlignmentsOne.push_back(groupOneAlignmentsConcat);
-            Alignments *newAlignments = new Alignments;
-            *newAlignments = (*groupOneAlignmentsConcat);
-            origAlignmentsOne.push_back(newAlignments);
-            AlignmentsTwo.push_back(groupTwoAlignmentsConcat);
-            newAlignments = new Alignments;
-            *newAlignments = (*groupTwoAlignmentsConcat);
-            origAlignmentsTwo.push_back(newAlignments);
+            inputAlignmentLengths.push_back(groupOneAlignmentConcat->get_nchar()); 
+            inputAlignmentLengths.push_back(groupTwoAlignmentConcat->get_nchar()); 
+            inputAlignment.push_back(groupOneAlignmentConcat);
+            inputAlignment.push_back(groupTwoAlignmentConcat);
+            AlignmentOne.push_back(groupOneAlignmentConcat);
+            Alignment *newAlignment = new Alignment;
+            *newAlignment = (*groupOneAlignmentConcat);
+            origAlignmentOne.push_back(newAlignment);
+            AlignmentTwo.push_back(groupTwoAlignmentConcat);
+            newAlignment = new Alignment;
+            *newAlignment = (*groupTwoAlignmentConcat);
+            origAlignmentTwo.push_back(newAlignment);
         }
         if (DEBUG_OUTPUT >= 1){
-            for (list <Alignments *>::iterator lait=inputAlignments.begin();lait!=inputAlignments.end();lait++){
+            for (list <Alignment *>::iterator lait=inputAlignment.begin();lait!=inputAlignment.end();lait++){
                 cout << *(*lait);
             }
         }
@@ -453,10 +453,10 @@ int main (int argc, char **argv)
                         cout << "   Jackknifing new alignments from original." << endl;
                         // We should jackknife to create new alignments. Not use the original. Basically, we should copy step 2!
                         // Cant just clear. There is dynamically allocated data here.
-                        AlignmentsOne.clear();
-                        AlignmentsTwo.clear();
-                        getSomeJackknifeAlignments(*AlignmentsOneConcat,AlignmentsOne,inputAlignmentsLengthsOne,myGeneOutParam.JackknifeParam.jackknifeColSize);
-                        getSomeJackknifeAlignments(*AlignmentsTwoConcat,AlignmentsTwo,inputAlignmentsLengthsTwo,myGeneOutParam.JackknifeParam.jackknifeColSize);
+                        AlignmentOne.clear();
+                        AlignmentTwo.clear();
+                        getSomeJackknifeAlignment(*AlignmentOneConcat,AlignmentOne,inputAlignmentLengthsOne,myGeneOutParam.JackknifeParam.jackknifeColSize);
+                        getSomeJackknifeAlignment(*AlignmentTwoConcat,AlignmentTwo,inputAlignmentLengthsTwo,myGeneOutParam.JackknifeParam.jackknifeColSize);
                     }
                     else {
                         cout << "   Using original alignments." << endl;
@@ -472,15 +472,15 @@ int main (int argc, char **argv)
                         DEBUG_OUTPUT = -1;
                     }
                     if (myGeneOutParam.doJackknife == 1){
-                        calcSVMseparationJackknife(AlignmentsOne,AlignmentsTwo, myGeneOutParam.JackknifeParam, myGeneOutParam.SampleParam,mySeparationResults);
+                        calcSVMseparationJackknife(AlignmentOne,AlignmentTwo, myGeneOutParam.JackknifeParam, myGeneOutParam.SampleParam,mySeparationResults);
                     }
                     if (myGeneOutParam.doMB == 1){
                         // Unecessary. numTreesPerFile set in calcSVM...
                         myGeneOutParam.SampleParam.numTreesPerFile = (myGeneOutParam.MrBayesParam.MBP_ngen/myGeneOutParam.MrBayesParam.MBP_sampleFreq);
-                        calcSVMseparationMrBayes(AlignmentsOne,AlignmentsTwo, myGeneOutParam.MrBayesParam,MB_results, myGeneOutParam.SampleParam,mySeparationResults);
+                        calcSVMseparationMrBayes(AlignmentOne,AlignmentTwo, myGeneOutParam.MrBayesParam,MB_results, myGeneOutParam.SampleParam,mySeparationResults);
                     }
                     if (myGeneOutParam.doMultInd == 1){
-                        calcSVMseparationMultInd(AlignmentsOne,AlignmentsTwo, myGeneOutParam.MultIndParam, myGeneOutParam.SampleParam,mySeparationResults);
+                        calcSVMseparationMultInd(AlignmentOne,AlignmentTwo, myGeneOutParam.MultIndParam, myGeneOutParam.SampleParam,mySeparationResults);
                     }
                     DEBUG_OUTPUT = old_DEBUG_OUTPUT;
                     if (firstRun == 1){
@@ -548,7 +548,7 @@ int main (int argc, char **argv)
                 cout << "Now performing " << myGeneOutParam.numStatTests << " statistical tests." << endl;
             }
 
-            Alignments *tempAlignments;
+            Alignment *tempAlignment;
             // for 1 to myGeneOutParam.numStatTests create a new set of alignments from groupTwo using jacknifing
             //      then for each new set of alignments, run mr bayes or jackknifing
             //      and svm to find the separation 
@@ -562,41 +562,41 @@ int main (int argc, char **argv)
                 SVM_separationResults mySeparationResults;
                 MrBayesResults MB_results;
                 int innerStatTestStartTime = time(0);
-                // Clear previous Alignments.
-                for (list <Alignments *>::iterator lait=AlignmentsOne.begin();lait!=AlignmentsOne.end();lait++){
+                // Clear previous Alignment.
+                for (list <Alignment *>::iterator lait=AlignmentOne.begin();lait!=AlignmentOne.end();lait++){
                     delete (*lait);
                 }
-                AlignmentsOne.clear();
-                for (list <Alignments *>::iterator lait=AlignmentsTwo.begin();lait!=AlignmentsTwo.end();lait++){
+                AlignmentOne.clear();
+                for (list <Alignment *>::iterator lait=AlignmentTwo.begin();lait!=AlignmentTwo.end();lait++){
                     delete (*lait);
                 }
-                AlignmentsTwo.clear();
+                AlignmentTwo.clear();
 
                 // Create an alignment to compare the rest to
                 // We need to be able to either jackknife OR if we are simulating
                 // data we should have option to generate from parameters instead
                 // of jackknifing.
                 if (myGeneOutParam.doSim == 1){
-                    userGenerateNewAlignmentsUniform(myGeneOutParam.simCommand, AlignmentsOne, AlignmentsTwo,inputAlignmentsLengths.size(),myGeneOutParam.numGroupOne); 
+                    userGenerateNewAlignmentUniform(myGeneOutParam.simCommand, AlignmentOne, AlignmentTwo,inputAlignmentLengths.size(),myGeneOutParam.numGroupOne); 
                 }
                 else {
                     if (myGeneOutParam.indJackknife == 0 && myGeneOutParam.permuteOrig == 0) {
                         if (DEBUG_OUTPUT >= 0){
                             cout << "Bootstrapping alignments from concat of second group of alignments." << endl;
                         }
-                        getSomeJackknifeAlignments(*AlignmentsTwoConcat,AlignmentsOne,AlignmentsTwo,inputAlignmentsLengths,myGeneOutParam.JackknifeParam.jackknifeColSize,myGeneOutParam.numGroupOne);
+                        getSomeJackknifeAlignment(*AlignmentTwoConcat,AlignmentOne,AlignmentTwo,inputAlignmentLengths,myGeneOutParam.JackknifeParam.jackknifeColSize,myGeneOutParam.numGroupOne);
                     }
                     if (myGeneOutParam.indJackknife == 1 && myGeneOutParam.permuteOrig == 0) {
                         if (DEBUG_OUTPUT >= 0){
                             cout << "Bootstrapping alignments from second group of alignments." << endl;
                         }
-                        getSomeJackknifeAlignments(origAlignmentsTwo,AlignmentsOne,AlignmentsTwo,inputAlignmentsLengths,myGeneOutParam.JackknifeParam.jackknifeColSize,myGeneOutParam.numGroupOne);
+                        getSomeJackknifeAlignment(origAlignmentTwo,AlignmentOne,AlignmentTwo,inputAlignmentLengths,myGeneOutParam.JackknifeParam.jackknifeColSize,myGeneOutParam.numGroupOne);
                     }
                     if (myGeneOutParam.permuteOrig == 1) {
                         if (DEBUG_OUTPUT >= 0){
                             cout << "Permuting all alignments and bootstrapping to appropriate size." << endl;
                         }
-                        getSomeJackknifeAlignmentsPermute(origInputAlignments,AlignmentsOne,AlignmentsTwo,inputAlignmentsLengths,myGeneOutParam.JackknifeParam.jackknifeColSize,myGeneOutParam.numGroupOne,myGeneOutParam.allowAnyPermuation);
+                        getSomeJackknifeAlignmentPermute(origInputAlignment,AlignmentOne,AlignmentTwo,inputAlignmentLengths,myGeneOutParam.JackknifeParam.jackknifeColSize,myGeneOutParam.numGroupOne,myGeneOutParam.allowAnyPermuation);
                     }
 
                 }
@@ -606,15 +606,15 @@ int main (int argc, char **argv)
                     DEBUG_OUTPUT = -1;
                 }
                 if (myGeneOutParam.doJackknife == 1){
-                    calcSVMseparationJackknife(AlignmentsOne,AlignmentsTwo, myGeneOutParam.JackknifeParam, myGeneOutParam.SampleParam,mySeparationResults);
+                    calcSVMseparationJackknife(AlignmentOne,AlignmentTwo, myGeneOutParam.JackknifeParam, myGeneOutParam.SampleParam,mySeparationResults);
                 }
                 if (myGeneOutParam.doMB == 1){
                     // Unnecessary.
                     myGeneOutParam.SampleParam.numTreesPerFile = (myGeneOutParam.MrBayesParam.MBP_ngen/myGeneOutParam.MrBayesParam.MBP_sampleFreq);
-                    calcSVMseparationMrBayes(AlignmentsOne,AlignmentsTwo, myGeneOutParam.MrBayesParam,MB_results, myGeneOutParam.SampleParam,mySeparationResults);
+                    calcSVMseparationMrBayes(AlignmentOne,AlignmentTwo, myGeneOutParam.MrBayesParam,MB_results, myGeneOutParam.SampleParam,mySeparationResults);
                 }
                 if (myGeneOutParam.doMultInd == 1){
-                    calcSVMseparationMultInd(AlignmentsOne,AlignmentsTwo, myGeneOutParam.MultIndParam, myGeneOutParam.SampleParam,mySeparationResults);
+                    calcSVMseparationMultInd(AlignmentOne,AlignmentTwo, myGeneOutParam.MultIndParam, myGeneOutParam.SampleParam,mySeparationResults);
                 }
                 DEBUG_OUTPUT = old_DEBUG_OUTPUT;
                 if (firstRun == 1){
@@ -822,7 +822,7 @@ int main (int argc, char **argv)
             for (int i=0;i<myGeneOutParam.numStatTests;i++){
                 SVM_separationResults mySeparationResults;
                 int innerStatTestStartTime = time(0);
-                // Clear previous Alignments.
+                // Clear previous Alignment.
 
                 int old_DEBUG_OUTPUT = DEBUG_OUTPUT;
                 if (DEBUG_OUTPUT <= 0) {
@@ -928,17 +928,17 @@ int main (int argc, char **argv)
                 myGeneOutParam.SampleParam.numTreesPerFile = myGeneOutParam.JackknifeParam.jackknifeCount;
                 //getTreesJackknife(myGeneOutParam.JackknifeParam, treeFileNames);
                 //getTreesJackknife(myGeneOutParam.JackknifeParam, treeFileNames);
-                getTreesJackknife(myGeneOutParam.JackknifeParam, inputAlignments, treeFileNames);
+                getTreesJackknife(myGeneOutParam.JackknifeParam, inputAlignment, treeFileNames);
             }
             if (myGeneOutParam.doMB == 1){
-                //list <Alignments *> myAlignments;
+                //list <Alignment *> myAlignment;
                 //for (list <string>::const_iterator lsit=myGeneOutParam.inputFileNames.begin();lsit!=myGeneOutParam.inputFileNames.end();lsit++){
-                //    Alignments *newAlignments = new Alignments(*lsit);
-                //    myAlignments.push_back(newAlignments);
+                //    Alignment *newAlignment = new Alignment(*lsit);
+                //    myAlignment.push_back(newAlignment);
                 //}
                 // Let getTreesJackknife open up the inputfiles
                 myGeneOutParam.SampleParam.numTreesPerFile = (myGeneOutParam.MrBayesParam.MBP_ngen/myGeneOutParam.MrBayesParam.MBP_sampleFreq);
-                getTreesMrBayes(myGeneOutParam.MrBayesParam, inputAlignments, treeFileNames, MB_results);
+                getTreesMrBayes(myGeneOutParam.MrBayesParam, inputAlignment, treeFileNames, MB_results);
             }
 
             list <list <string> >::iterator llit = treeFileNames.begin();
@@ -1048,7 +1048,7 @@ int main (int argc, char **argv)
             for (int i=0;i<myGeneOutParam.numStatTests;i++){
                 SVM_separationResults mySeparationResults;
                 int innerStatTestStartTime = time(0);
-                // Clear previous Alignments.
+                // Clear previous Alignment.
 
                 int old_DEBUG_OUTPUT = DEBUG_OUTPUT;
                 if (DEBUG_OUTPUT <= 0) {

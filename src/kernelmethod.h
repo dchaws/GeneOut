@@ -11,7 +11,7 @@
 #include <list>
 #include <set>
 #include <math.h>
-#include "alignments.h"
+#include "alignment.h"
 #include "debugoutput.h"
 #include "matrix.h"
 #include "newickworker.h"
@@ -142,26 +142,26 @@ list <svm_node *> *project_SVM_nodes (list <svm_node *> &svmVecs, double cutOffV
 /// each file, since for each file there can be multiple run files
 void getTreesMrBayes(MrBayesParameters &tmbp, list <list <string> > &treeFileNames, MrBayesResults &MB_results);
 
-void getTreesMrBayes(MrBayesParameters &tmbp,list <Alignments *> &inputAlignments, list <list <string> > &treeFileNames, MrBayesResults &MB_results);
+void getTreesMrBayes(MrBayesParameters &tmbp,list <Alignment *> &inputAlignment, list <list <string> > &treeFileNames, MrBayesResults &MB_results);
 
-/// This takes in tjp (ignoring nexInputFiles) and uses inputAlignments.
-/// It will create the trees using jackknife for each Alignments and place
+/// This takes in tjp (ignoring nexInputFiles) and uses inputAlignment.
+/// It will create the trees using jackknife for each Alignment and place
 /// them in outputFileNames
-void getTreesJackknife(JackknifeParameters &tjp,list <Alignments *> &inputAlignments, list <string> outputFileNames);
+void getTreesJackknife(JackknifeParameters &tjp,list <Alignment *> &inputAlignment, list <string> outputFileNames);
 
-/// This will only sample tsp.sampleSize many trees uniformly from the inputAlignments
+/// This will only sample tsp.sampleSize many trees uniformly from the inputAlignment
 /// This will create outputFileNames, which will be one file.
-void getTreesJackknife(JackknifeParameters &tjp, SampleParameters &tsp, list <Alignments *> &inputAlignments, string &outputFileName);
+void getTreesJackknife(JackknifeParameters &tjp, SampleParameters &tsp, list <Alignment *> &inputAlignment, string &outputFileName);
 
 void getTreesJackknife(JackknifeParameters &tjp, list <list <string> > &treeFileNames);
 
 /// Fill treeFileNames with random names
-void getTreesJackknife(JackknifeParameters &tjp, list <Alignments *> &inputAlignments, list <list <string> > &treeFileNames);
+void getTreesJackknife(JackknifeParameters &tjp, list <Alignment *> &inputAlignment, list <list <string> > &treeFileNames);
 
-/// This takes in tjp (ignoring nexInputFiles) and uses inputAlignments.
+/// This takes in tjp (ignoring nexInputFiles) and uses inputAlignment.
 /// It will create trees by randomly selecting representative individuals and place
 /// the resulting trees in outputFileNames
-void getTreesMultInd(MultIndParameters &tmip,list <Alignments *> &inputAlignments, list <string> outputFileNames);
+void getTreesMultInd(MultIndParameters &tmip,list <Alignment *> &inputAlignment, list <string> outputFileNames);
 
 /// This function actually does the PCA projection using the empirical mean and the projection
 /// matrix.
@@ -185,16 +185,16 @@ void get_svm_predictions(svm_problem &myProblem, svm_model &myModel, int &groupO
 
 void calcSVMseparationJackknife(list <string> inputFileNames, int numGroupOne, JackknifeParameters &tjp, SampleParameters &tsvmp, SVM_separationResults &results);
 
-void calcSVMseparationJackknife(list <Alignments *> AlignmentsOne, list <Alignments *> AlignmentsTwo, JackknifeParameters &tjp, SampleParameters &tsvmp, SVM_separationResults &results);
+void calcSVMseparationJackknife(list <Alignment *> AlignmentOne, list <Alignment *> AlignmentTwo, JackknifeParameters &tjp, SampleParameters &tsvmp, SVM_separationResults &results);
 
 /// This will use AlignementOne and AlignemntsTwo for input
-void calcSVMseparationMrBayes(list <Alignments *> AlignmentsOne, list <Alignments *> AlignmentsTwo, MrBayesParameters &tmbp, MrBayesResults &MB_results, SampleParameters &tsvmp, SVM_separationResults &results);
+void calcSVMseparationMrBayes(list <Alignment *> AlignmentOne, list <Alignment *> AlignmentTwo, MrBayesParameters &tmbp, MrBayesResults &MB_results, SampleParameters &tsvmp, SVM_separationResults &results);
 
 /// This will use the filenames specified in MrBayesParamters as input
 void calcSVMseparationMrBayes(MrBayesParameters &tmbp, MrBayesResults &MB_results, SampleParameters &tsvmp, SVM_separationResults &results, int numGroupOne);
 
 /// This will use AlignementOne and AlignemntsTwo for input
-void calcSVMseparationMultInd(list <Alignments *> AlignmentsOne, list <Alignments *> AlignmentsTwo, MultIndParameters &tmip, SampleParameters &tsvmp, SVM_separationResults &results);
+void calcSVMseparationMultInd(list <Alignment *> AlignmentOne, list <Alignment *> AlignmentTwo, MultIndParameters &tmip, SampleParameters &tsvmp, SVM_separationResults &results);
 
 /// This will use the filenames specified in MrBayesParamters as input
 void calcSVMseparationMultInd(list <string> inputFileNames, MultIndParameters &tmip, SampleParameters &tsvmp, SVM_separationResults &results, int numGroupOne);
@@ -205,39 +205,39 @@ void calcSVMseparation(list <string> &treeFileNamesGroupOne, list <string> &tree
 /// This calls the above function, but using the same treeFileNames for the sample and resample
 void calcSVMseparation(list <string> &treeFileNamesGroupOne, list <string> &treeFileNamesGroupTwo, SampleParameters &tsp, SVM_separationResults &results);
 
-/// This will will use origAlignments to fill AlignmentsOne with groupOneSize jackknifes, and 
-/// AlignmentsLengths.size() - groupOneSize jackknifes in AlignmentsTwo. It will create jackknife 
-/// alignments of length specified in AlignmentsLengths.
-/// The new alignments will be added to to AlignmentsOne and AlignmentsTwo, according
-/// to groupOneSize, i.e. groupOneSize will go into AlignmentsOne.
-void getSomeJackknifeAlignments(Alignments &origAlignments, list <Alignments *> &AlignmentsOne, list <Alignments *> &AlignmentsTwo, list <int> &AlignmentsLengths, int colSize, int groupOneSize);
+/// This will will use origAlignment to fill AlignmentOne with groupOneSize jackknifes, and 
+/// AlignmentLengths.size() - groupOneSize jackknifes in AlignmentTwo. It will create jackknife 
+/// alignments of length specified in AlignmentLengths.
+/// The new alignments will be added to to AlignmentOne and AlignmentTwo, according
+/// to groupOneSize, i.e. groupOneSize will go into AlignmentOne.
+void getSomeJackknifeAlignment(Alignment &origAlignment, list <Alignment *> &AlignmentOne, list <Alignment *> &AlignmentTwo, list <int> &AlignmentLengths, int colSize, int groupOneSize);
 
-/// This will use origAlignments to fill AlignmentsOne with jackknifes using
+/// This will use origAlignment to fill AlignmentOne with jackknifes using
 /// AligmentsLengths as a guide for the number of characters and the number of
 /// alignments total;
-void getSomeJackknifeAlignments(Alignments &origAlignments, list <Alignments *> &AlignmentsOne, list <int> &AlignmentsLengths, int colSize);
+void getSomeJackknifeAlignment(Alignment &origAlignment, list <Alignment *> &AlignmentOne, list <int> &AlignmentLengths, int colSize);
 
-/// This will use origAlignments to fill AlignmentsOne with jackknifes using
+/// This will use origAlignment to fill AlignmentOne with jackknifes using
 /// AligmentsLengths as a guide for the number of characters and the number of
 /// alignments total. When generating each new alignment, only one randomly
-/// selected alignment of origAlignments is used.
-void getSomeJackknifeAlignments(list <Alignments *> &origAlignments, list <Alignments *> &AlignmentsOne, list <Alignments *> &AlignmentsTwo, list <int> &AlignmentsLengths, int colSize, int groupOneSize);
+/// selected alignment of origAlignment is used.
+void getSomeJackknifeAlignment(list <Alignment *> &origAlignment, list <Alignment *> &AlignmentOne, list <Alignment *> &AlignmentTwo, list <int> &AlignmentLengths, int colSize, int groupOneSize);
 
 
 /// 9/1/10 New function to take in all original alignments, permute them (sample without replacement) then bootstrap to the appropriate size
-/// This function assumes that the first groupOneSize alignments in origAlignments are the original first group.
-/// allowAnyPermutation 1, means allow any permuation, 0 means do not allow AlignmentsOne to be alignments all from the original group one.
-void getSomeJackknifeAlignmentsPermute(list <Alignments *> origAlignments, list <Alignments *> &AlignmentsOne, list <Alignments *> &AlignmentsTwo, list <int> &AlignmentsLengths, int colSize, int groupOneSize, int allowAnyPermutation);
+/// This function assumes that the first groupOneSize alignments in origAlignment are the original first group.
+/// allowAnyPermutation 1, means allow any permuation, 0 means do not allow AlignmentOne to be alignments all from the original group one.
+void getSomeJackknifeAlignmentPermute(list <Alignment *> origAlignment, list <Alignment *> &AlignmentOne, list <Alignment *> &AlignmentTwo, list <int> &AlignmentLengths, int colSize, int groupOneSize, int allowAnyPermutation);
 
 /// This will call the command specified by input to generate new alignments
 /// The word 'uniform' refers to the fact that the program will be used for
 /// all new alignments created.
-/// We will fill AlignmentsOne with the first alignment then the rest will
-/// go into AlignmentsTwo
+/// We will fill AlignmentOne with the first alignment then the rest will
+/// go into AlignmentTwo
 /// We expect to use genCommand as 'genCommand <filename>'
-/// The new alignments will be added to to AlignmentsOne and AlignmentsTwo, according
-/// to groupOneSize, i.e. groupOneSize will go into AlignmentsOne.
-void userGenerateNewAlignmentsUniform(string genCommand, list <Alignments *> &AlignmentsOne, list <Alignments *> &AlignmentsTwo, int numNewAlignments, int gropuOneSize);
+/// The new alignments will be added to to AlignmentOne and AlignmentTwo, according
+/// to groupOneSize, i.e. groupOneSize will go into AlignmentOne.
+void userGenerateNewAlignmentUniform(string genCommand, list <Alignment *> &AlignmentOne, list <Alignment *> &AlignmentTwo, int numNewAlignment, int gropuOneSize);
 
 /// This calculates the mean of the vectors in groupOne
 svm_node *Mean(list <svm_node *> &groupOne);

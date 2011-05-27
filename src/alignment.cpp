@@ -1,71 +1,71 @@
 // $Rev: 807 $ $Date: 2011-04-10 13:21:55 -0400 (Sun, 10 Apr 2011) $
-#include "alignments.h"
+#include "alignment.h"
 #include "debugoutput.h"
 #include "nexus.h"
 
 
 using namespace::std;
 
-void Alignments::init ()
+void Alignment::init ()
 {
-    //cout << "Alignments " << this << " allocated." << endl;
+    //cout << "Alignment " << this << " allocated." << endl;
     nchar = 0;
     ntax = 0;
-    //if (alignmentsAllocated == 1){
-    //    deleteAlignments();
+    //if (alignmentAllocated == 1){
+    //    deleteAlignment();
     //}
-    alignmentsAllocated = 0;
-    alignments = 0; // Set alignments to 0
-    AlignmentsName.clear();
+    alignmentAllocated = 0;
+    alignment = 0; // Set alignment to 0
+    AlignmentName.clear();
     taxaNames.clear();
     outputFormat = OF_STANDARD;
     inputFormat = IF_NEXUS;
 }
  
-//Alignments::Alignments (Alignments &someAlignments)
+//Alignment::Alignment (Alignment &someAlignment)
 //{
 //    init();
-//    *this = someAlignments;
+//    *this = someAlignment;
 //}
 
-Alignments::Alignments (int tmp_ntax, int tmp_nchar, string tmp_AlignmentsName, list <string> tmp_taxaNames, char **tmp_alignments, int tmp_alignmentsAllocated )
+Alignment::Alignment (int tmp_ntax, int tmp_nchar, string tmp_AlignmentName, list <string> tmp_taxaNames, char **tmp_alignment, int tmp_alignmentAllocated )
 {
     init (); // Some other stuff might need to be set
     ntax = tmp_ntax;
     nchar = tmp_nchar;
-    AlignmentsName = tmp_AlignmentsName;
+    AlignmentName = tmp_AlignmentName;
     taxaNames = tmp_taxaNames;
-    alignments = tmp_alignments;
-    alignmentsAllocated = tmp_alignmentsAllocated;
+    alignment = tmp_alignment;
+    alignmentAllocated = tmp_alignmentAllocated;
 }
 
-Alignments::Alignments (string fileName, int setInputFormat)
+Alignment::Alignment (string fileName, int setInputFormat)
 {
     init();
     inputFormat = setInputFormat;
     readFile(fileName);
 }
 
-Alignments::Alignments (string fileName)
+Alignment::Alignment (string fileName)
 {
     init ();
     readFile(fileName);
 }
 
-Alignments::Alignments ()
+Alignment::Alignment ()
 {
     init ();
 }
 
-Alignments::~Alignments ()
+Alignment::~Alignment ()
 {
-    //cout << "Alignments " << this << " deleted." << endl;
-    // Delete alignments
-    deleteAlignments();
+    //cout << "Alignment " << this << " deleted." << endl;
+    // Delete alignment
+    deleteAlignment();
 
 }
 
-void Alignments::readFile (string fileName)
+void Alignment::readFile (string fileName)
 {
     fstream inputFile;
     inputFile.open(fileName.c_str());
@@ -73,136 +73,136 @@ void Alignments::readFile (string fileName)
         inputFile >> *this;
     }
     else{
-        cout << "Alignments::Alignments (string fileName): could not open " << fileName << endl;
+        cout << "Alignment::Alignment (string fileName): could not open " << fileName << endl;
         exit(0);
     }
 
 }
 
-void Alignments::deleteAlignments ()
+void Alignment::deleteAlignment ()
 {
-    if (alignmentsAllocated == 1)
+    if (alignmentAllocated == 1)
     {
         for (int i=0;i<nchar;i++)
         {
-            delete [] alignments[i];
+            delete [] alignment[i];
         }
-        delete [] alignments;
-        alignments = 0;
+        delete [] alignment;
+        alignment = 0;
     }
-    alignmentsAllocated = 0;
+    alignmentAllocated = 0;
 }
 
-void Alignments::allocateAlignments()
+void Alignment::allocateAlignment()
 {
-    allocateAlignments(ntax,nchar);
+    allocateAlignment(ntax,nchar);
 
 }
 
-void Alignments::allocateAlignments(int tmp_ntax,int tmp_nchar)
+void Alignment::allocateAlignment(int tmp_ntax,int tmp_nchar)
 {
-    if (alignmentsAllocated == 0){
+    if (alignmentAllocated == 0){
         if (tmp_ntax >= 1 && tmp_nchar >= 1)
         {
-            alignments = new char*[tmp_nchar];
+            alignment = new char*[tmp_nchar];
             for (int i=0;i<tmp_nchar;i++){
-                alignments[i] = new char[tmp_ntax];
+                alignment[i] = new char[tmp_ntax];
                 for (int j=0;j<tmp_ntax;j++){
-                    alignments[i][j] = 0;
+                    alignment[i][j] = 0;
                 }
             }
-            alignmentsAllocated = 1;
+            alignmentAllocated = 1;
         }
     }
     else {
-        cout << "Alignments::allocateAlignments called with already allocated alignments." << endl;
+        cout << "Alignment::allocateAlignment called with already allocated alignment." << endl;
         exit(0);
     }
 }
 
-Alignments::Alignments (std::istream &in)
+Alignment::Alignment (std::istream &in)
 {
     in >> *this;
 }
 
-std::ostream& operator << (std::ostream &out, const Alignments &someAlignments)
+std::ostream& operator << (std::ostream &out, const Alignment &someAlignment)
 {
-    if (someAlignments.outputFormat == OF_STANDARD){ // standard format
+    if (someAlignment.outputFormat == OF_STANDARD){ // standard format
 
-        if (!someAlignments.AlignmentsName.empty())
+        if (!someAlignment.AlignmentName.empty())
         {
-            out << "Alignments: " << someAlignments.AlignmentsName << endl;
+            out << "Alignment: " << someAlignment.AlignmentName << endl;
 
         }
         else {
-            out << "Alignments:" << endl;
+            out << "Alignment:" << endl;
         }
-        out << "Number of taxa: " << someAlignments.ntax << "    Number of characters: " << someAlignments.nchar << endl;
-        if (someAlignments.alignmentsAllocated == 1)
+        out << "Number of taxa: " << someAlignment.ntax << "    Number of characters: " << someAlignment.nchar << endl;
+        if (someAlignment.alignmentAllocated == 1)
         {
             list <string>::const_iterator lsit;
-            if (!someAlignments.taxaNames.empty())
+            if (!someAlignment.taxaNames.empty())
             {
-                lsit = someAlignments.taxaNames.begin();
+                lsit = someAlignment.taxaNames.begin();
             }
-            for(int j=0;j<someAlignments.ntax;j++){
-                if (!someAlignments.taxaNames.empty())
+            for(int j=0;j<someAlignment.ntax;j++){
+                if (!someAlignment.taxaNames.empty())
                 {
                     out << *lsit << "          ";
                 }
-                for(int i=0;i<someAlignments.nchar;i++){
-                    out << someAlignments.alignments[i][j];
+                for(int i=0;i<someAlignment.nchar;i++){
+                    out << someAlignment.alignment[i][j];
                 }
                 out << endl;
-                if (!someAlignments.taxaNames.empty())
+                if (!someAlignment.taxaNames.empty())
                 {
                     lsit++;
                 }
             }
         }
         else {
-            cout << "   No alignments." << endl;
+            cout << "   No alignment." << endl;
         }
     }
-    else if (someAlignments.outputFormat == OF_NEXUS){
+    else if (someAlignment.outputFormat == OF_NEXUS){
         out << "#NEXUS" << endl;
         out << "begin data;" << endl;
-        out << "dimensions ntax=" << someAlignments.ntax << " nchar=" << someAlignments.nchar << ";" << endl;
+        out << "dimensions ntax=" << someAlignment.ntax << " nchar=" << someAlignment.nchar << ";" << endl;
         out << "format datatype=dna missing=? gap=-;" << endl;
         out << "matrix" << endl;
         list <string>::const_iterator lsit;
-        if (!someAlignments.taxaNames.empty())
+        if (!someAlignment.taxaNames.empty())
         {
-            lsit = someAlignments.taxaNames.begin();
+            lsit = someAlignment.taxaNames.begin();
         }
-        for (int i=0;i<someAlignments.ntax;i++){
-            if (!someAlignments.taxaNames.empty()) {
+        for (int i=0;i<someAlignment.ntax;i++){
+            if (!someAlignment.taxaNames.empty()) {
                 out << "   " << *lsit << "     ";
             }
             else {
                 out << "   " << i+1 << "     ";
             }
-            for (int j=0;j<someAlignments.nchar;j++){
-                out << someAlignments.alignments[j][i];
+            for (int j=0;j<someAlignment.nchar;j++){
+                out << someAlignment.alignment[j][i];
             }
             out << endl;
-            if (!someAlignments.taxaNames.empty()) {
+            if (!someAlignment.taxaNames.empty()) {
                 lsit++;
             }
         }
         out << ";" << endl;
         out << "end;" << endl;
     }
-    else if (someAlignments.outputFormat == OF_PHYLIP){
-        out << someAlignments.ntax << " " << someAlignments.nchar << endl;
+    else if (someAlignment.outputFormat == OF_PHYLIP){
+        out << someAlignment.ntax << " " << someAlignment.nchar << endl;
 
         list <string>::const_iterator lsit;
-        if (!someAlignments.taxaNames.empty())
+        if (!someAlignment.taxaNames.empty())
         {
-            lsit = someAlignments.taxaNames.begin();
+            lsit = someAlignment.taxaNames.begin();
         }
-        for (int i=0;i<someAlignments.ntax;i++){
-            if (!someAlignments.taxaNames.empty() && 1 == 0) { //phylip can not handle these names
+        for (int i=0;i<someAlignment.ntax;i++){
+            if (!someAlignment.taxaNames.empty() && 1 == 0) { //phylip can not handle these names
                 if (DEBUG_OUTPUT >= 2){
                     cout << "Output taxa name: \"" << *lsit << setw(10) << "\"" << endl;
                 }
@@ -217,8 +217,8 @@ std::ostream& operator << (std::ostream &out, const Alignments &someAlignments)
                 out << i+1 << setw(10); // For some reason phylip likes this best!!! So annoying
             }
             //out << i+1 << setw(10);
-            for (int j=0;j<someAlignments.nchar;j++){
-                out << someAlignments.alignments[j][i];
+            for (int j=0;j<someAlignment.nchar;j++){
+                out << someAlignment.alignment[j][i];
             }
             out << endl;
         }
@@ -227,19 +227,19 @@ std::ostream& operator << (std::ostream &out, const Alignments &someAlignments)
     return out;
 }
 
-std::istream& operator >> (std::istream &in, Alignments &someAlignments)
+std::istream& operator >> (std::istream &in, Alignment &someAlignment)
 {
-    // If we are going to read in a new alignment, delete previous alignments
+    // If we are going to read in a new alignment, delete previous alignment
     // and clear everything out, except the inputFormat;
-    int tempFormat = someAlignments.inputFormat;
-    someAlignments.init ();
-    someAlignments.inputFormat = tempFormat;
+    int tempFormat = someAlignment.inputFormat;
+    someAlignment.init ();
+    someAlignment.inputFormat = tempFormat;
     if (in.bad()){
-        cout << "Alignments friend operator >>, input bad bit set" << endl;
+        cout << "Alignment friend operator >>, input bad bit set" << endl;
         exit (0);
     }
 
-    if (someAlignments.inputFormat == IF_NEXUS)
+    if (someAlignment.inputFormat == IF_NEXUS)
     {
         string input;
         // First look for '#NEXUS'
@@ -283,9 +283,9 @@ std::istream& operator >> (std::istream &in, Alignments &someAlignments)
                                     input = nextNexusToken(in);
                                     // input should now be the number of taxa
                                     if (DEBUG_OUTPUT >= 1) {
-                                        cout << "Setting someAlignments.ntax = " << input << endl;
+                                        cout << "Setting someAlignment.ntax = " << input << endl;
                                     }
-                                    someAlignments.ntax = atoi(input.c_str());
+                                    someAlignment.ntax = atoi(input.c_str());
                                 } 
                                 input = nextNexusTokenUpper(in);
                             }
@@ -294,7 +294,7 @@ std::istream& operator >> (std::istream &in, Alignments &someAlignments)
                         else if (input == "TAXLABELS"){
                             input = nextNexusToken(in);
                             while (input != ";"){
-                                someAlignments.taxaNames.push_back(input);
+                                someAlignment.taxaNames.push_back(input);
                                 if (DEBUG_OUTPUT >= 1) {
                                     cout << "Adding label: " << input << endl;
                                 }
@@ -336,9 +336,9 @@ std::istream& operator >> (std::istream &in, Alignments &someAlignments)
                                     input = nextNexusToken(in);
                                     // input should now be the number of taxa
                                     if (DEBUG_OUTPUT >= 1) {
-                                        cout << "Setting someAlignments.ntax = " << input << endl;
+                                        cout << "Setting someAlignment.ntax = " << input << endl;
                                     }
-                                    someAlignments.ntax = atoi(input.c_str());
+                                    someAlignment.ntax = atoi(input.c_str());
                                 } 
                                 else if (input == "NCHAR"){
                                     input = nextNexusToken(in);
@@ -346,9 +346,9 @@ std::istream& operator >> (std::istream &in, Alignments &someAlignments)
                                     input = nextNexusToken(in);
                                     // input should now be the number of characters 
                                     if (DEBUG_OUTPUT >= 1) {
-                                        cout << "Setting someAlignments.nchar = " << input << endl;
+                                        cout << "Setting someAlignment.nchar = " << input << endl;
                                     }
-                                    someAlignments.nchar = atoi(input.c_str());
+                                    someAlignment.nchar = atoi(input.c_str());
                                 }
                                 input = nextNexusTokenUpper(in);
                             }
@@ -387,8 +387,8 @@ std::istream& operator >> (std::istream &in, Alignments &someAlignments)
                             }
                         }
                         else if (input == "MATRIX"){
-                            // Allocate the alignments
-                            someAlignments.allocateAlignments();
+                            // Allocate the alignment
+                            someAlignment.allocateAlignment();
 
                             unsigned curAlignment = 0;
                             input = nextNexusToken(in); // This should be the name of the first alignment
@@ -396,7 +396,7 @@ std::istream& operator >> (std::istream &in, Alignments &someAlignments)
                                 if (DEBUG_OUTPUT > 0 ) {
                                     cout << "Taxa name: " << input << endl;
                                 }
-                                someAlignments.taxaNames.push_back(input);
+                                someAlignment.taxaNames.push_back(input);
                             }
                             while (input != ";"){
                                 string alignment;
@@ -407,7 +407,7 @@ std::istream& operator >> (std::istream &in, Alignments &someAlignments)
                                 if (DEBUG_OUTPUT >= 1) {
                                     cout << "nexString = " << nexString << endl;
                                 }
-                                while (nexString[nexStringPos] != 0 && curAlignmentPos < someAlignments.nchar){
+                                while (nexString[nexStringPos] != 0 && curAlignmentPos < someAlignment.nchar){
                                     if (nexString[nexStringPos] == '['){
                                         nexStringPos++;
                                         while (nexString[nexStringPos] != ']' && nexString[nexStringPos] != 0){
@@ -416,7 +416,7 @@ std::istream& operator >> (std::istream &in, Alignments &someAlignments)
                                     }
 
                                     if (nexString[nexStringPos] != ' '){
-                                        someAlignments.alignments[curAlignmentPos][curAlignment] = nexString[nexStringPos]; 
+                                        someAlignment.alignment[curAlignmentPos][curAlignment] = nexString[nexStringPos]; 
                                         curAlignmentPos++;
                                     }
                                     nexStringPos++;
@@ -427,7 +427,7 @@ std::istream& operator >> (std::istream &in, Alignments &someAlignments)
                                     if (DEBUG_OUTPUT > 0 ) {
                                         cout << "Taxa name: " << input << endl;
                                     }
-                                    someAlignments.taxaNames.push_back(input);
+                                    someAlignment.taxaNames.push_back(input);
                                 }
                             }
                         }
@@ -466,9 +466,9 @@ std::istream& operator >> (std::istream &in, Alignments &someAlignments)
                                     input = nextNexusToken(in);
                                     // input should now be the number of taxa
                                     if (DEBUG_OUTPUT >= 1) {
-                                        cout << "Setting someAlignments.ntax = " << input << endl;
+                                        cout << "Setting someAlignment.ntax = " << input << endl;
                                     }
-                                    someAlignments.ntax = atoi(input.c_str());
+                                    someAlignment.ntax = atoi(input.c_str());
                                 } 
                                 else if (input == "NCHAR"){
                                     input = nextNexusToken(in);
@@ -476,9 +476,9 @@ std::istream& operator >> (std::istream &in, Alignments &someAlignments)
                                     input = nextNexusToken(in);
                                     // input should now be the number of characters 
                                     if (DEBUG_OUTPUT >= 1) {
-                                        cout << "Setting someAlignments.nchar = " << input << endl;
+                                        cout << "Setting someAlignment.nchar = " << input << endl;
                                     }
-                                    someAlignments.nchar = atoi(input.c_str());
+                                    someAlignment.nchar = atoi(input.c_str());
                                 }
                                 input = nextNexusTokenUpper(in);
                             }
@@ -517,8 +517,8 @@ std::istream& operator >> (std::istream &in, Alignments &someAlignments)
                             }
                         }
                         else if (input == "MATRIX"){
-                            // Allocate the alignments
-                            someAlignments.allocateAlignments();
+                            // Allocate the alignment
+                            someAlignment.allocateAlignment();
 
                             unsigned curAlignment = 0;
                             input = nextNexusToken(in); // This should be the name of the first alignment
@@ -526,7 +526,7 @@ std::istream& operator >> (std::istream &in, Alignments &someAlignments)
                                 if (DEBUG_OUTPUT > 0 ) {
                                     cout << "Taxa name: " << input << endl;
                                 }
-                                someAlignments.taxaNames.push_back(input);
+                                someAlignment.taxaNames.push_back(input);
                             }
                             while (input != ";"){
                                 string alignment;
@@ -537,7 +537,7 @@ std::istream& operator >> (std::istream &in, Alignments &someAlignments)
                                 if (DEBUG_OUTPUT >= 1) {
                                     cout << "nexString = " << nexString << endl;
                                 }
-                                while (nexString[nexStringPos] != 0 && curAlignmentPos < someAlignments.nchar){
+                                while (nexString[nexStringPos] != 0 && curAlignmentPos < someAlignment.nchar){
                                     if (nexString[nexStringPos] == '['){
                                         nexStringPos++;
                                         while (nexString[nexStringPos] != ']' && nexString[nexStringPos] != 0){
@@ -545,7 +545,7 @@ std::istream& operator >> (std::istream &in, Alignments &someAlignments)
                                         }
                                     }
                                     if (nexString[nexStringPos] != ' '){
-                                        someAlignments.alignments[curAlignmentPos][curAlignment] = nexString[nexStringPos]; 
+                                        someAlignment.alignment[curAlignmentPos][curAlignment] = nexString[nexStringPos]; 
                                         curAlignmentPos++;
                                     }
                                     nexStringPos++;
@@ -556,7 +556,7 @@ std::istream& operator >> (std::istream &in, Alignments &someAlignments)
                                     if (DEBUG_OUTPUT > 0 ) {
                                         cout << "Taxa name: " << input << endl;
                                     }
-                                    someAlignments.taxaNames.push_back(input);
+                                    someAlignment.taxaNames.push_back(input);
                                 }
 
                             }
@@ -589,25 +589,25 @@ std::istream& operator >> (std::istream &in, Alignments &someAlignments)
             }
         }
     }
-    if (someAlignments.inputFormat == IF_PHYLIP)
+    if (someAlignment.inputFormat == IF_PHYLIP)
     {
         // First item should be taxa
-        in >> someAlignments.ntax;
-        in >> someAlignments.nchar;
-        someAlignments.allocateAlignments(someAlignments.ntax,someAlignments.nchar);
+        in >> someAlignment.ntax;
+        in >> someAlignment.nchar;
+        someAlignment.allocateAlignment(someAlignment.ntax,someAlignment.nchar);
 
         // Now read in taxa names, then string of characters.
         string tempInput;
-        for (int i=0;i<someAlignments.ntax;i++)
+        for (int i=0;i<someAlignment.ntax;i++)
         {
             // Read in name
             in >> tempInput;
-            someAlignments.taxaNames.push_back(tempInput);
+            someAlignment.taxaNames.push_back(tempInput);
             // Read in DNA
             in >> tempInput;
-            for (int j=0;j<someAlignments.nchar;j++)
+            for (int j=0;j<someAlignment.nchar;j++)
             {
-                someAlignments.alignments[j][i] = tempInput[j];
+                someAlignment.alignment[j][i] = tempInput[j];
             }
             
         }
@@ -617,33 +617,33 @@ std::istream& operator >> (std::istream &in, Alignments &someAlignments)
 }
 
 
-Alignments & Alignments::operator = (const Alignments &someAlignments)
+Alignment & Alignment::operator = (const Alignment &someAlignment)
 {
-    this->deleteAlignments();
+    this->deleteAlignment();
     this->init();
-    this->ntax = someAlignments.ntax;
-    this->nchar = someAlignments.nchar;
-    this->taxaNames = someAlignments.taxaNames;
-    this->AlignmentsName = someAlignments.AlignmentsName;
-    this->allocateAlignments(); //Allocate the alignments with ntax and nchar
+    this->ntax = someAlignment.ntax;
+    this->nchar = someAlignment.nchar;
+    this->taxaNames = someAlignment.taxaNames;
+    this->AlignmentName = someAlignment.AlignmentName;
+    this->allocateAlignment(); //Allocate the alignment with ntax and nchar
     for (int i=0;i<this->ntax;i++){
         for (int j=0;j<this->nchar;j++){
-            this->alignments[j][i] = someAlignments.alignments[j][i];
+            this->alignment[j][i] = someAlignment.alignment[j][i];
         }
     }
-    this->alignmentsAllocated = 1;
-    this->outputFormat = someAlignments.outputFormat;
+    this->alignmentAllocated = 1;
+    this->outputFormat = someAlignment.outputFormat;
 
     return *this;
 }
 
-bool Alignments::operator == (const Alignments &someAlignments)
+bool Alignment::operator == (const Alignment &someAlignment)
 {
     int allSame = 1;
 
     for (int i=0;i<this->nchar;i++){
         for (int j=0;j<this->ntax;j++){
-            if (this->alignments[i][j] != someAlignments.alignments[i][j]) {
+            if (this->alignment[i][j] != someAlignment.alignment[i][j]) {
                 allSame = 0;
             }
         }
@@ -656,127 +656,127 @@ bool Alignments::operator == (const Alignments &someAlignments)
     }
 }
 
-Alignments Alignments::operator + (const Alignments &someAlignments)
+Alignment Alignment::operator + (const Alignment &someAlignment)
 {
-    if (this->ntax != someAlignments.ntax){
-        cout << "Alignments::operator +: this->ntax != sA->ntax" << endl;
+    if (this->ntax != someAlignment.ntax){
+        cout << "Alignment::operator +: this->ntax != sA->ntax" << endl;
     }
 
-    if (this->ntax != someAlignments.ntax){
-        cout << "Alignments::operator +=: this->ntax != someAlignments.get_ntax()" << endl;
+    if (this->ntax != someAlignment.ntax){
+        cout << "Alignment::operator +=: this->ntax != someAlignment.get_ntax()" << endl;
         exit(0);
     }
-    char **new_alignments;
-    new_alignments = new char*[this->nchar + someAlignments.nchar];
-    for (int i=0;i<this->nchar + someAlignments.nchar;i++){
-        new_alignments[i] = new char[ntax];
+    char **new_alignment;
+    new_alignment = new char*[this->nchar + someAlignment.nchar];
+    for (int i=0;i<this->nchar + someAlignment.nchar;i++){
+        new_alignment[i] = new char[ntax];
         for (int j=0;j<ntax;j++){
             if (i < this->nchar){
-                new_alignments[i][j] = this->alignments[i][j];
+                new_alignment[i][j] = this->alignment[i][j];
             }
             else {
-                new_alignments[i][j] = someAlignments(i-this->nchar,j);
+                new_alignment[i][j] = someAlignment(i-this->nchar,j);
             }
         }
     }
-    Alignments newAlignments(this->ntax,this->nchar + someAlignments.nchar, this->AlignmentsName, this->taxaNames,new_alignments,1);
+    Alignment newAlignment(this->ntax,this->nchar + someAlignment.nchar, this->AlignmentName, this->taxaNames,new_alignment,1);
 
-    return newAlignments;
+    return newAlignment;
 }
 
-Alignments & Alignments::operator += (const Alignments &someAlignments)
+Alignment & Alignment::operator += (const Alignment &someAlignment)
 {
-    //if (this->ntax != someAlignments.get_ntax()){
-    if (this->ntax != someAlignments.ntax){
-        cout << "Alignments::operator +=: this->ntax != someAlignments.get_ntax()" << endl;
+    //if (this->ntax != someAlignment.get_ntax()){
+    if (this->ntax != someAlignment.ntax){
+        cout << "Alignment::operator +=: this->ntax != someAlignment.get_ntax()" << endl;
         exit(0);
     }
-    char **new_alignments;
-    new_alignments = new char*[this->nchar + someAlignments.nchar];
-    //for (int i=0;i<this->nchar + someAlignments.get_nchar();i++){
-    for (int i=0;i<this->nchar + someAlignments.nchar;i++){
-        new_alignments[i] = new char[ntax];
+    char **new_alignment;
+    new_alignment = new char*[this->nchar + someAlignment.nchar];
+    //for (int i=0;i<this->nchar + someAlignment.get_nchar();i++){
+    for (int i=0;i<this->nchar + someAlignment.nchar;i++){
+        new_alignment[i] = new char[ntax];
         for (int j=0;j<ntax;j++){
             if (i < this->nchar){
-                new_alignments[i][j] = this->alignments[i][j];
+                new_alignment[i][j] = this->alignment[i][j];
             }
             else {
-                new_alignments[i][j] = someAlignments(i-this->nchar,j);
+                new_alignment[i][j] = someAlignment(i-this->nchar,j);
             }
         }
     }
 
-    this->deleteAlignments();
-    this->alignments = new_alignments;
-    this->alignmentsAllocated = 1;
-    this->nchar = this->nchar + someAlignments.nchar;
+    this->deleteAlignment();
+    this->alignment = new_alignment;
+    this->alignmentAllocated = 1;
+    this->nchar = this->nchar + someAlignment.nchar;
 
     // We need to concat someAlignents to this object
     return *this;
 }
 
-char Alignments::operator() (unsigned row, unsigned col) const
+char Alignment::operator() (unsigned row, unsigned col) const
 {
-    return alignments[row][col];
+    return alignment[row][col];
 }
 
-char & Alignments::operator() (unsigned row, unsigned col)
+char & Alignment::operator() (unsigned row, unsigned col)
 {
-    return alignments[row][col];
+    return alignment[row][col];
 }
 
-const int Alignments::get_ntax()
+const int Alignment::get_ntax()
 {
     return ntax;
 }
 
-const int Alignments::get_nchar()
+const int Alignment::get_nchar()
 {
     return nchar;
 }
 
-const list <string> Alignments::get_taxaNames()
+const list <string> Alignment::get_taxaNames()
 {
     return taxaNames;
 }
 
-const string Alignments::get_AlignmentsName()
+const string Alignment::get_AlignmentName()
 {   
-    return AlignmentsName;
+    return AlignmentName;
 }
 
-void Alignments::setOutputFormat(int format)
+void Alignment::setOutputFormat(int format)
 {
     outputFormat = format;
 }
 
-void Alignments::setInputFormat(int format)
+void Alignment::setInputFormat(int format)
 {
     inputFormat = format;
 }
 
-Alignments Alignments::getContiguousColumns(int pos, int k)
+Alignment Alignment::getContiguousColumns(int pos, int k)
 {
     if (pos >= nchar || k > nchar) {
-        cout << "Alignments::getContiguousColumns: pos >= nchar || k > nchar" << endl;
+        cout << "Alignment::getContiguousColumns: pos >= nchar || k > nchar" << endl;
         exit(0);
     }
-    char **new_alignments;
-    new_alignments = new char*[k];
+    char **new_alignment;
+    new_alignment = new char*[k];
     for (int i=0;i<k;i++){
-        new_alignments[i] = new char[ntax];
+        new_alignment[i] = new char[ntax];
         for (int j=0;j<ntax;j++){
-            new_alignments[i][j] = this->alignments[(pos + i) % nchar][j];
+            new_alignment[i][j] = this->alignment[(pos + i) % nchar][j];
         }
     }
-    Alignments newAlignments(this->ntax,k, this->AlignmentsName, this->taxaNames,new_alignments,1);
+    Alignment newAlignment(this->ntax,k, this->AlignmentName, this->taxaNames,new_alignment,1);
 
-    return newAlignments;
+    return newAlignment;
 }
 
-Alignments Alignments::delColumnsWithMissingData()
+Alignment Alignment::delColumnsWithMissingData()
 { 
-    char **newAlignments;
+    char **newAlignment;
     int new_nchar = 0;
     int delColumn[nchar];
 
@@ -788,8 +788,8 @@ Alignments Alignments::delColumnsWithMissingData()
     for(int i=0;i<nchar;i++){
         //cout << "Checking column " << i << endl;
         for (int j=0;j<ntax;j++){
-            if (alignments[i][j] != 'A' && alignments[i][j] != 'T' && alignments[i][j] != 'C' && alignments[i][j] != 'G'){
-                //cout << "       Bad character alignments[" << i << "][" << j << "] = " << alignments[i][j] << endl;
+            if (alignment[i][j] != 'A' && alignment[i][j] != 'T' && alignment[i][j] != 'C' && alignment[i][j] != 'G'){
+                //cout << "       Bad character alignment[" << i << "][" << j << "] = " << alignment[i][j] << endl;
                 delColumn[i]=1; // Delete this column
             }
         }
@@ -802,66 +802,66 @@ Alignments Alignments::delColumnsWithMissingData()
         }
     }
 
-    newAlignments = new char*[new_nchar];
+    newAlignment = new char*[new_nchar];
     for(int i=0;i<new_nchar;i++){
-        newAlignments[i] = new char[ntax];
+        newAlignment[i] = new char[ntax];
     }
     int tempCount = 0;
 
     for(int i=0;i<nchar;i++){
         if (delColumn[i] == 0){
             for (int j=0;j<ntax;j++){
-                newAlignments[tempCount][j] = alignments[i][j];
+                newAlignment[tempCount][j] = alignment[i][j];
             }
 
             tempCount++;
         }
     }
     
-    Alignments returnAlignments(this->ntax,new_nchar, this->AlignmentsName, this->taxaNames,newAlignments,1);
+    Alignment returnAlignment(this->ntax,new_nchar, this->AlignmentName, this->taxaNames,newAlignment,1);
 
-    return returnAlignments;
+    return returnAlignment;
 
 }
 
-Alignments Alignments::getJackknife(int k)
+Alignment Alignment::getJackknife(int k)
 {
     return getJackknife(k,(int)floor((double)nchar/k));
 
 }
 
-Alignments Alignments::getJackknife(int k, int count)
+Alignment Alignment::getJackknife(int k, int count)
 {
-    Alignments returnAlignments;
+    Alignment returnAlignment;
 
     if (count > 0){
-        returnAlignments = this->getContiguousColumns(rand() % this->nchar,k);
+        returnAlignment = this->getContiguousColumns(rand() % this->nchar,k);
 
         for (int i=1;i<count;i++){
-            returnAlignments += this->getContiguousColumns(rand() % this->nchar,k);
+            returnAlignment += this->getContiguousColumns(rand() % this->nchar,k);
         }
     }
-    return returnAlignments;
+    return returnAlignment;
 
 }
 
-Alignments Alignments::getTaxaSubset(set <unsigned> someTaxa)
+Alignment Alignment::getTaxaSubset(set <unsigned> someTaxa)
 {
     if (DEBUG_OUTPUT > 1 ){
-        cout << "Alignments::getTaxaSubset called." << endl;
+        cout << "Alignment::getTaxaSubset called." << endl;
         for (set <unsigned>::const_iterator sit=someTaxa.begin();sit != someTaxa.end();sit++) {
             cout << *sit << " ";
         }
         cout << endl;
     }
 
-    char **new_alignments;
-    new_alignments = new char*[nchar];
+    char **new_alignment;
+    new_alignment = new char*[nchar];
     for (int i=0;i<nchar;i++){
-        new_alignments[i] = new char[someTaxa.size()];
+        new_alignment[i] = new char[someTaxa.size()];
         unsigned rowCount = 0;
         for (set <unsigned>::const_iterator sit=someTaxa.begin();sit!=someTaxa.end();sit++){
-            new_alignments[i][rowCount] = this->alignments[i][*sit];
+            new_alignment[i][rowCount] = this->alignment[i][*sit];
             rowCount++;
         }
     }
@@ -883,28 +883,28 @@ Alignments Alignments::getTaxaSubset(set <unsigned> someTaxa)
             lsit++;
         }
     }
-    Alignments newAlignments(someTaxa.size(),nchar, this->AlignmentsName, newTaxaNames,new_alignments,1);
+    Alignment newAlignment(someTaxa.size(),nchar, this->AlignmentName, newTaxaNames,new_alignment,1);
 
     if (DEBUG_OUTPUT > 1 ){
-        cout << "Alignments::getTaxaSubset done." << endl;
+        cout << "Alignment::getTaxaSubset done." << endl;
     }
-    return newAlignments;
+    return newAlignment;
 }
 
-double Alignments::sequenceDivergenceMin()
+double Alignment::sequenceDivergenceMin()
 {
-    if (alignmentsAllocated == 0) {
-        cout << "Alignments::sequenceDivergence called with no alignments allocated." << endl;
+    if (alignmentAllocated == 0) {
+        cout << "Alignment::sequenceDivergence called with no alignment allocated." << endl;
         exit (1);
     }
     int minHamming = -1;
     int currHamming = -1;
     for(int i=0;i<ntax;i++){
         for (int j=i+1;j<ntax;j++){
-            //Compute the hamming distance of alignments[][i] and alignments[][j]
+            //Compute the hamming distance of alignment[][i] and alignment[][j]
             currHamming=0;
             for (int k=0;k<nchar;k++){
-                if (alignments[k][i] != alignments[k][j]) {
+                if (alignment[k][i] != alignment[k][j]) {
                     currHamming++;
                 }
             }
@@ -917,20 +917,20 @@ double Alignments::sequenceDivergenceMin()
     return (double)(((double)minHamming)/(double)nchar);
 }
 
-double Alignments::sequenceDivergenceAvg()
+double Alignment::sequenceDivergenceAvg()
 {
-    if (alignmentsAllocated == 0) {
-        cout << "Alignments::sequenceDivergence called with no alignments allocated." << endl;
+    if (alignmentAllocated == 0) {
+        cout << "Alignment::sequenceDivergence called with no alignment allocated." << endl;
         exit (1);
     }
     int totalHamming = 0;
     int currHamming = -1;
     for(int i=0;i<ntax;i++){
         for (int j=i+1;j<ntax;j++){
-            //Compute the hamming distance of alignments[][i] and alignments[][j]
+            //Compute the hamming distance of alignment[][i] and alignment[][j]
             currHamming=0;
             for (int k=0;k<nchar;k++){
-                if (alignments[k][i] != alignments[k][j]) {
+                if (alignment[k][i] != alignment[k][j]) {
                     currHamming++;
                 }
             }
@@ -943,20 +943,20 @@ double Alignments::sequenceDivergenceAvg()
 }
 
 
-void Alignments::printSequenceDivergencePairs()
+void Alignment::printSequenceDivergencePairs()
 {
-    if (alignmentsAllocated == 0) {
-        cout << "Alignments::sequenceDivergence called with no alignments allocated." << endl;
+    if (alignmentAllocated == 0) {
+        cout << "Alignment::sequenceDivergence called with no alignment allocated." << endl;
         exit (1);
     }
     int totalHamming = 0;
     int currHamming = -1;
     for(int i=0;i<ntax;i++){
         for (int j=i+1;j<ntax;j++){
-            //Compute the hamming distance of alignments[][i] and alignments[][j]
+            //Compute the hamming distance of alignment[][i] and alignment[][j]
             currHamming=0;
             for (int k=0;k<nchar;k++){
-                if (alignments[k][i] != alignments[k][j]) {
+                if (alignment[k][i] != alignment[k][j]) {
                     currHamming++;
                 }
             }

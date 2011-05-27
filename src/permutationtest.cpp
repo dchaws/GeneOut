@@ -542,19 +542,19 @@ int main (int argc, char **argv)
 
     // If we are working on alignments, we read them all in here.
     list <int> inputAlignmentsLengths;
-    list <Alignments *> inputAlignments;
-    list <Alignments *> AlignmentsOne, AlignmentsTwo;
+    list <Alignment *> inputAlignments;
+    list <Alignment *> AlignmentsOne, AlignmentsTwo;
     if (noTreeCalc != 1){
         if (concatGroups != 1) {
 
             for (list<string>::const_iterator lsit=inputFileNames.begin();lsit!=inputFileNames.end();lsit++){
-                Alignments *newAlignments = new Alignments(*lsit);
+                Alignment *newAlignments = new Alignment(*lsit);
                 inputAlignmentsLengths.push_back(newAlignments->get_nchar()); 
                 inputAlignments.push_back(newAlignments);
                 // Here we will add extra bootstrap alignments if called for
                 if (bootstrapAlignments == 1 && bootstrapConcat != 1){
                     for (int i=0;i<bootstrapCount;i++){
-                        Alignments *tmpAlignments = new Alignments;
+                        Alignment *tmpAlignments = new Alignment;
                         *tmpAlignments = newAlignments->getJackknife(bootstrapColSize);
                         inputAlignments.push_back(tmpAlignments);
                     }
@@ -566,20 +566,20 @@ int main (int argc, char **argv)
                 numGroupOne *= (bootstrapCount + 1);
             }
 
-            Alignments *groupOneAlignmentsConcat;
-            Alignments *groupTwoAlignmentsConcat;
+            Alignment *groupOneAlignmentsConcat;
+            Alignment *groupTwoAlignmentsConcat;
             int firstGroupOne = 1;
             int firstGroupTwo = 1;
 
             // Again, default is to compare the first input vs the rest.
             // Lets us numGroupOne
-            list <Alignments *>::iterator lait=inputAlignments.begin();
+            list <Alignment *>::iterator lait=inputAlignments.begin();
             int groupAddCount = 0;
             while (groupAddCount < numGroupOne){
                 AlignmentsOne.push_back(*lait);
                 if (firstGroupOne == 1){
                     firstGroupOne = 0;
-                    groupOneAlignmentsConcat = new Alignments;
+                    groupOneAlignmentsConcat = new Alignment;
                     *groupOneAlignmentsConcat = *(*lait);
                 }
                 else {
@@ -592,7 +592,7 @@ int main (int argc, char **argv)
             if (bootstrapAlignments == 1 && bootstrapConcat == 1){
                 for (int j=0;j<numGroupOne;j++){
                     for (int i=0;i<bootstrapCount;i++){
-                        Alignments *tmpAlignments = new Alignments;
+                        Alignment *tmpAlignments = new Alignment;
                         *tmpAlignments = groupOneAlignmentsConcat->getJackknife(bootstrapColSize,(int)floor((double)*lit/bootstrapColSize));
                         AlignmentsOne.push_back(tmpAlignments);
                     }
@@ -606,7 +606,7 @@ int main (int argc, char **argv)
                 AlignmentsTwo.push_back(*lait);
                 if (firstGroupTwo == 1){
                     firstGroupTwo = 0;
-                    groupTwoAlignmentsConcat = new Alignments;
+                    groupTwoAlignmentsConcat = new Alignment;
                     *groupTwoAlignmentsConcat = *(*lait);
                 }
                 else {
@@ -617,7 +617,7 @@ int main (int argc, char **argv)
             if (bootstrapAlignments == 1 && bootstrapConcat == 1){
                 while (lit!=inputAlignmentsLengths.end()) {
                     for (int i=0;i<bootstrapCount;i++){
-                        Alignments *tmpAlignments = new Alignments;
+                        Alignment *tmpAlignments = new Alignment;
                         *tmpAlignments = groupTwoAlignmentsConcat->getJackknife(bootstrapColSize,(int)floor((double)*lit/bootstrapColSize));
                         AlignmentsTwo.push_back(tmpAlignments);
                     }
@@ -628,36 +628,36 @@ int main (int argc, char **argv)
             delete groupTwoAlignmentsConcat;
             if (bootstrapAlignments == 1 && bootstrapConcat == 1){
                 inputAlignments.clear();
-                for (list <Alignments *>::iterator lait=AlignmentsOne.begin();lait!=AlignmentsOne.end();lait++){
+                for (list <Alignment *>::iterator lait=AlignmentsOne.begin();lait!=AlignmentsOne.end();lait++){
                     inputAlignments.push_back(*lait);
                 }
-                for (list <Alignments *>::iterator lait=AlignmentsTwo.begin();lait!=AlignmentsTwo.end();lait++){
+                for (list <Alignment *>::iterator lait=AlignmentsTwo.begin();lait!=AlignmentsTwo.end();lait++){
                     inputAlignments.push_back(*lait);
                 }
             }
         }
         else if (concatGroups == 1) {
             int fileCount = 0;
-            Alignments *groupOneAlignmentsConcat;
-            Alignments *groupTwoAlignmentsConcat;
+            Alignment *groupOneAlignmentsConcat;
+            Alignment *groupTwoAlignmentsConcat;
             int firstGroupOne = 1;
             int firstGroupTwo = 1;
             for (list<string>::const_iterator lsit=inputFileNames.begin();lsit!=inputFileNames.end();lsit++){
                 if (fileCount < numGroupOne) {
                     if (firstGroupOne == 1){
                         firstGroupOne = 0;
-                        groupOneAlignmentsConcat = new Alignments(*lsit);
+                        groupOneAlignmentsConcat = new Alignment(*lsit);
                     }
-                    Alignments *newAlignments = new Alignments(*lsit);
+                    Alignment *newAlignments = new Alignment(*lsit);
                     *groupOneAlignmentsConcat += *newAlignments;
                     delete newAlignments;
                 }
                 else {
                     if (firstGroupTwo == 1){
                         firstGroupTwo = 0;
-                        groupTwoAlignmentsConcat = new Alignments(*lsit);
+                        groupTwoAlignmentsConcat = new Alignment(*lsit);
                     }
-                    Alignments *newAlignments = new Alignments(*lsit);
+                    Alignment *newAlignments = new Alignment(*lsit);
                     *groupTwoAlignmentsConcat += *newAlignments;
                     delete newAlignments;
                 }
@@ -671,7 +671,7 @@ int main (int argc, char **argv)
             AlignmentsTwo.push_back(groupTwoAlignmentsConcat);
         }
         if (DEBUG_OUTPUT >= 1){
-            for (list <Alignments *>::iterator lait=inputAlignments.begin();lait!=inputAlignments.end();lait++){
+            for (list <Alignment *>::iterator lait=inputAlignments.begin();lait!=inputAlignments.end();lait++){
                 cout << *(*lait);
             }
         }
@@ -844,7 +844,7 @@ int main (int argc, char **argv)
     int mainEndTime = time(0);
     cout << "Total run time (wall clock): " << mainEndTime - mainStartTime << endl;
     cout << endl;
-    for (list <Alignments *>::iterator lait=inputAlignments.begin();lait!=inputAlignments.end();lait++){
+    for (list <Alignment *>::iterator lait=inputAlignments.begin();lait!=inputAlignments.end();lait++){
         delete *lait;
     }
 }

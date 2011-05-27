@@ -2069,19 +2069,19 @@ void getTreesMrBayes(MrBayesParameters &tmbp, list <list <string> > &treeFileNam
 
 }
 
-void getTreesMrBayes(MrBayesParameters &tmbp,list <Alignments *> &inputAlignments, list <list <string> > &treeFileNames, MrBayesResults &MB_results)
+void getTreesMrBayes(MrBayesParameters &tmbp,list <Alignment *> &inputAlignment, list <list <string> > &treeFileNames, MrBayesResults &MB_results)
 {
-    // Write the alignments from inputAlignments down as temporary files.
+    // Write the alignments from inputAlignment down as temporary files.
     list <string> newFileNames;
-    string tempAlignmentsBaseName = tempPrefix;
-    tempAlignmentsBaseName.append("tempalignments_ID");
+    string tempAlignmentBaseName = tempPrefix;
+    tempAlignmentBaseName.append("tempalignments_ID");
     char tmpstr[80];
     sprintf (tmpstr,"%d%d%d%d",(int)getpid(),rand(),rand(),rand());
-    tempAlignmentsBaseName.append(tmpstr);
+    tempAlignmentBaseName.append(tmpstr);
 
     int tempFileCount = 0;
-    for (list <Alignments *>::iterator lait = inputAlignments.begin();lait != inputAlignments.end();lait++){
-        string tempString = tempAlignmentsBaseName;
+    for (list <Alignment *>::iterator lait = inputAlignment.begin();lait != inputAlignment.end();lait++){
+        string tempString = tempAlignmentBaseName;
         sprintf(tmpstr,"%d",tempFileCount);
         tempString.append("_file");
         tempString.append(tmpstr);
@@ -2113,10 +2113,10 @@ void getTreesMrBayes(MrBayesParameters &tmbp,list <Alignments *> &inputAlignment
     }
 }
 
-void getTreesJackknife(JackknifeParameters &tjp,list <Alignments *> &inputAlignments, list <string> outputFileNames)
+void getTreesJackknife(JackknifeParameters &tjp,list <Alignment *> &inputAlignment, list <string> outputFileNames)
 {
-    if (inputAlignments.size() != outputFileNames.size()){
-        cout << "getTreesJackknife: inputAlignments.size() != outputFileNames.size()" << endl;
+    if (inputAlignment.size() != outputFileNames.size()){
+        cout << "getTreesJackknife: inputAlignment.size() != outputFileNames.size()" << endl;
         exit (0);
     }
     char randIdString[80];
@@ -2140,10 +2140,10 @@ void getTreesJackknife(JackknifeParameters &tjp,list <Alignments *> &inputAlignm
     runalignToTreeCommand.append(" >> ");
     string tempCommandStr;
 
-    list <Alignments *>::iterator lait=inputAlignments.begin();
+    list <Alignment *>::iterator lait=inputAlignment.begin();
     list <string>::const_iterator lsit=outputFileNames.begin();
     int i = 0;
-    while (lait!=inputAlignments.end()){
+    while (lait!=inputAlignment.end()){
         if (DEBUG_OUTPUT >= 0){
             cout << "   Processing " << i << " with output file name: " << *lsit << endl; 
         }
@@ -2185,9 +2185,9 @@ void getTreesJackknife(JackknifeParameters &tjp,list <Alignments *> &inputAlignm
                     jackknifeInnerStartTime = time(0);
                 }
             }
-            Alignments jackAlignments = (*lait)->getJackknife(tjp.jackknifeColSize);
-            jackAlignments.setOutputFormat(OF_PHYLIP);
-            tempJackknifeFile << jackAlignments;
+            Alignment jackAlignment = (*lait)->getJackknife(tjp.jackknifeColSize);
+            jackAlignment.setOutputFormat(OF_PHYLIP);
+            tempJackknifeFile << jackAlignment;
         }
         tempJackknifeFile.close();
         //Now run program to generate tree and append to tempCommandStr
@@ -2248,7 +2248,7 @@ void getTreesJackknife(JackknifeParameters &tjp,list <Alignments *> &inputAlignm
     }
 }
 
-void getTreesJackknife(JackknifeParameters &tjp, SampleParameters &tsp, list <Alignments *> &inputAlignments, string &outputFileName)
+void getTreesJackknife(JackknifeParameters &tjp, SampleParameters &tsp, list <Alignment *> &inputAlignment, string &outputFileName)
 {
     char randIdString[80];
     sprintf(randIdString,"%d%d%d%d",(int)getpid(),rand() % 100000,rand() % 100000,rand() % 100000);
@@ -2282,30 +2282,30 @@ void getTreesJackknife(JackknifeParameters &tjp, SampleParameters &tsp, list <Al
 
     // REPLACE WITH UNIFORM -DAVE 9/22/10
     // Maybe we want to be able to specify the svm sample size for each group
-    int samplesPerAlignments[inputAlignments.size()];
+    int samplesPerAlignment[inputAlignment.size()];
     if (tsp.SVM_sampleUniform == 1 ) {
-        if ( tsp.SVM_sampleSize % inputAlignments.size() != 0)
+        if ( tsp.SVM_sampleSize % inputAlignment.size() != 0)
         {
             cerr << "SVM_sampleUniform \% SVM_sampleSize != 0" << endl;
             exit (0);
         }
-        for (int i=0;i<inputAlignments.size();i++){
-            samplesPerAlignments[i]=tsp.SVM_sampleSize/inputAlignments.size();
+        for (int i=0;i<inputAlignment.size();i++){
+            samplesPerAlignment[i]=tsp.SVM_sampleSize/inputAlignment.size();
         }
     }
     if (tsp.SVM_sampleUniform == 0 ) {
-        for (int i=0;i<inputAlignments.size();i++){
-            samplesPerAlignments[i]=0;
+        for (int i=0;i<inputAlignment.size();i++){
+            samplesPerAlignment[i]=0;
         }
         for (int i=0;i<tsp.SVM_sampleSize;i++){
-            samplesPerAlignments[(rand() % inputAlignments.size())]++;
+            samplesPerAlignment[(rand() % inputAlignment.size())]++;
         }
     }
     if (DEBUG_OUTPUT >= 2) {
         cout << "tsp.SVM_sampleSize: " << tsp.SVM_sampleSize << endl;
-        cout << "inputAlignments.size(): " << inputAlignments.size() << endl;
-        for (int i=0;i<inputAlignments.size();i++){
-            cout << "samplesPerAlignments[" << i << "]: " << samplesPerAlignments[i] << endl;
+        cout << "inputAlignment.size(): " << inputAlignment.size() << endl;
+        for (int i=0;i<inputAlignment.size();i++){
+            cout << "samplesPerAlignment[" << i << "]: " << samplesPerAlignment[i] << endl;
         }
     }
 
@@ -2327,13 +2327,13 @@ void getTreesJackknife(JackknifeParameters &tjp, SampleParameters &tsp, list <Al
     //runFile.close();
 
 
-    list <Alignments *>::iterator lait=inputAlignments.begin();
+    list <Alignment *>::iterator lait=inputAlignment.begin();
     int i = 0;
     int jackknifeStartTime = time(0);
-    while (lait!=inputAlignments.end()){
+    while (lait!=inputAlignment.end()){
         int tenPercent=(int)floor((double)tsp.SVM_sampleSize/10);
         int jackknifeInnerStartTime = time(0);
-        for (int l=0;l<samplesPerAlignments[i];l++){
+        for (int l=0;l<samplesPerAlignment[i];l++){
             if (DEBUG_OUTPUT >= 2){
                 if (((l+1) % tenPercent) == 0){
                     cout << "   " << setw(3) << 10*(l+1)/tenPercent << "%";
@@ -2342,9 +2342,9 @@ void getTreesJackknife(JackknifeParameters &tjp, SampleParameters &tsp, list <Al
                     jackknifeInnerStartTime = time(0);
                 }
             }
-            Alignments jackAlignments = (*lait)->getJackknife(tjp.jackknifeColSize);
-            jackAlignments.setOutputFormat(OF_PHYLIP);
-            tempJackknifeFile << jackAlignments;
+            Alignment jackAlignment = (*lait)->getJackknife(tjp.jackknifeColSize);
+            jackAlignment.setOutputFormat(OF_PHYLIP);
+            tempJackknifeFile << jackAlignment;
         }
 
         
@@ -2410,8 +2410,8 @@ void getTreesJackknife(JackknifeParameters &tjp, SampleParameters &tsp, list <Al
 void getTreesJackknife(JackknifeParameters &tjp, list <list <string> > &treeFileNames)
 {
     // Now we should just open all the alignments, and pass the appropriate parameters to
-    // void getTreesJackknife(JackknifeParameters &tjp,list <Alignments> &inputAlignments, list <string> outputFileNames)
-    list <Alignments *> myAlignments;
+    // void getTreesJackknife(JackknifeParameters &tjp,list <Alignment> &inputAlignment, list <string> outputFileNames)
+    list <Alignment *> myAlignment;
     list <string> outputFileNames;
     string      fileNamePostfix = "_DNADIST_and_NEIGHBOR_OUT";
     for (list <string>::const_iterator lsit=tjp.inputNexFiles.begin();lsit!=tjp.inputNexFiles.end();lsit++){
@@ -2425,32 +2425,32 @@ void getTreesJackknife(JackknifeParameters &tjp, list <list <string> > &treeFile
 
         thisinputNexFilesFileNames.push_back(oneRunFileName);
         treeFileNames.push_back(thisinputNexFilesFileNames);
-        Alignments *newAlignments = new Alignments(*lsit);
-        myAlignments.push_back(newAlignments);
-        //cout << "newAlignments" << endl << newAlignments;
+        Alignment *newAlignment = new Alignment(*lsit);
+        myAlignment.push_back(newAlignment);
+        //cout << "newAlignment" << endl << newAlignment;
     }
-    getTreesJackknife(tjp,myAlignments,outputFileNames);
-    //Lets clean up myAlignments. 
-    for (list <Alignments *>::iterator lait = myAlignments.begin();lait!= myAlignments.end();lait++){
+    getTreesJackknife(tjp,myAlignment,outputFileNames);
+    //Lets clean up myAlignment. 
+    for (list <Alignment *>::iterator lait = myAlignment.begin();lait!= myAlignment.end();lait++){
         delete *lait;
     }
-    myAlignments.clear();
+    myAlignment.clear();
 }
 
-void getTreesJackknife(JackknifeParameters &tjp, list <Alignments *> &inputAlignments, list <list <string> > &treeFileNames)
+void getTreesJackknife(JackknifeParameters &tjp, list <Alignment *> &inputAlignment, list <list <string> > &treeFileNames)
 {
-    string tempAlignmentsBaseName = tempPrefix;
-    tempAlignmentsBaseName.append("tempalignments_ID");
+    string tempAlignmentBaseName = tempPrefix;
+    tempAlignmentBaseName.append("tempalignments_ID");
     list <string> outputFileNames;
     char tmpstr[80];
     sprintf (tmpstr,"%d%d%d%d",(int)getpid(),rand(),rand(),rand());
-    tempAlignmentsBaseName.append(tmpstr);
+    tempAlignmentBaseName.append(tmpstr);
 
     int tempFileCount = 0;
-    for (list <Alignments *>::iterator lait = inputAlignments.begin();lait != inputAlignments.end();lait++){
+    for (list <Alignment *>::iterator lait = inputAlignment.begin();lait != inputAlignment.end();lait++){
         list <string> thisinputNexFilesFileNames;
         thisinputNexFilesFileNames.clear(); // Clear out any previous filenames
-        string tempString = tempAlignmentsBaseName;
+        string tempString = tempAlignmentBaseName;
         sprintf(tmpstr,"%d",tempFileCount);
         tempString.append("_file");
         tempString.append(tmpstr);
@@ -2461,13 +2461,13 @@ void getTreesJackknife(JackknifeParameters &tjp, list <Alignments *> &inputAlign
         tempFileCount++;
     }
 
-    getTreesJackknife(tjp,inputAlignments,outputFileNames);
+    getTreesJackknife(tjp,inputAlignment,outputFileNames);
 }
 
-void getTreesMultInd(MultIndParameters &tmip,list <Alignments *> &inputAlignments, list <string> outputFileNames)
+void getTreesMultInd(MultIndParameters &tmip,list <Alignment *> &inputAlignment, list <string> outputFileNames)
 {
-    if (inputAlignments.size() != outputFileNames.size()){
-        cout << "getTreesMultInd: inputAlignments.size() != outputFileNames.size()" << endl;
+    if (inputAlignment.size() != outputFileNames.size()){
+        cout << "getTreesMultInd: inputAlignment.size() != outputFileNames.size()" << endl;
         exit (0);
     }
     char randIdString[80];
@@ -2489,10 +2489,10 @@ void getTreesMultInd(MultIndParameters &tmip,list <Alignments *> &inputAlignment
     runalignToTreeCommand.append(" >> ");
     string tempCommandStr;
 
-    list <Alignments *>::iterator lait=inputAlignments.begin();
+    list <Alignment *>::iterator lait=inputAlignment.begin();
     list <string>::const_iterator lsit=outputFileNames.begin();
     int i = 0;
-    while (lait!=inputAlignments.end()){
+    while (lait!=inputAlignment.end()){
         if (DEBUG_OUTPUT >= 0){
             cout << "   Processing " << i << " with output file name: " << *lsit << endl; 
         }
@@ -2546,9 +2546,9 @@ void getTreesMultInd(MultIndParameters &tmip,list <Alignments *> &inputAlignment
                     setIndex++;
                 }
             }
-            Alignments jackAlignments = (*lait)->getTaxaSubset(someTaxa);
-            jackAlignments.setOutputFormat(OF_PHYLIP);
-            tempMultIndFile << jackAlignments;
+            Alignment jackAlignment = (*lait)->getTaxaSubset(someTaxa);
+            jackAlignment.setOutputFormat(OF_PHYLIP);
+            tempMultIndFile << jackAlignment;
         }
         tempMultIndFile.close();
         //Now run program to generate tree and append to tempCommandStr
@@ -3001,20 +3001,20 @@ void get_svm_predictions(svm_problem &myProblem, svm_model &myModel, int &groupO
     }
 }
 
-void calcSVMseparationMrBayes(list <Alignments *> AlignmentsOne, list <Alignments *> AlignmentsTwo, MrBayesParameters &tmbp, MrBayesResults &MB_results, SampleParameters &tsvmp, SVM_separationResults &results)
+void calcSVMseparationMrBayes(list <Alignment *> AlignmentOne, list <Alignment *> AlignmentTwo, MrBayesParameters &tmbp, MrBayesResults &MB_results, SampleParameters &tsvmp, SVM_separationResults &results)
 {
     // Write out these alignments and then read them into mr bayes
 
     list <string> newFileNames;
-    string tempAlignmentsBaseName = tempPrefix;
-    tempAlignmentsBaseName.append("tempalignments_ID");
+    string tempAlignmentBaseName = tempPrefix;
+    tempAlignmentBaseName.append("tempalignments_ID");
     char tmpstr[80];
     sprintf (tmpstr,"%d%d%d%d",(int)getpid(),rand(),rand(),rand());
-    tempAlignmentsBaseName.append(tmpstr);
+    tempAlignmentBaseName.append(tmpstr);
 
     int tempFileCount = 0;
-    for (list <Alignments *>::iterator lait = AlignmentsOne.begin();lait != AlignmentsOne.end();lait++){
-        string tempString = tempAlignmentsBaseName;
+    for (list <Alignment *>::iterator lait = AlignmentOne.begin();lait != AlignmentOne.end();lait++){
+        string tempString = tempAlignmentBaseName;
         sprintf(tmpstr,"%d",tempFileCount);
         tempString.append("_file");
         tempString.append(tmpstr);
@@ -3032,8 +3032,8 @@ void calcSVMseparationMrBayes(list <Alignments *> AlignmentsOne, list <Alignment
         newFileNames.push_back(tempString);
         tempFileCount++;
     }
-    for (list <Alignments *>::iterator lait = AlignmentsTwo.begin();lait != AlignmentsTwo.end();lait++){
-        string tempString = tempAlignmentsBaseName;
+    for (list <Alignment *>::iterator lait = AlignmentTwo.begin();lait != AlignmentTwo.end();lait++){
+        string tempString = tempAlignmentBaseName;
         sprintf(tmpstr,"%d",tempFileCount);
         tempString.append("_file");
         tempString.append(tmpstr);
@@ -3055,7 +3055,7 @@ void calcSVMseparationMrBayes(list <Alignments *> AlignmentsOne, list <Alignment
     MrBayesParameters new_tmbp = tmbp;
     new_tmbp.inputNexFiles = newFileNames;
 
-    calcSVMseparationMrBayes(new_tmbp,MB_results,tsvmp,results,AlignmentsOne.size());
+    calcSVMseparationMrBayes(new_tmbp,MB_results,tsvmp,results,AlignmentOne.size());
     // We should delete these temporary alignments
     for (list <string>::iterator lsit = newFileNames.begin();lsit!=newFileNames.end();lsit++){
         string delCommand = "rm -f ";
@@ -3121,31 +3121,31 @@ void calcSVMseparationMrBayes(MrBayesParameters &tmbp, MrBayesResults &MB_result
 void calcSVMseparationJackknife(list <string> inputFileNames, int numGroupOne, JackknifeParameters &tjp, SampleParameters &tsvmp, SVM_separationResults &results)
 {
     // Read in alignments then call calcSVMseparationJackknife using alignments
-    list <Alignments *> AlignmentsOne, AlignmentsTwo;
+    list <Alignment *> AlignmentOne, AlignmentTwo;
 
     int fileGroupOneCount = 0;
-    Alignments *tempAlignments; 
+    Alignment *tempAlignment; 
     for (list <string>::iterator lsit = inputFileNames.begin();lsit!= inputFileNames.end();lsit++){
-        tempAlignments = new Alignments(*lsit);
+        tempAlignment = new Alignment(*lsit);
         if (fileGroupOneCount < numGroupOne){
-            AlignmentsOne.push_back(tempAlignments);
+            AlignmentOne.push_back(tempAlignment);
         }
         else {
-            AlignmentsTwo.push_back(tempAlignments);
+            AlignmentTwo.push_back(tempAlignment);
         }
         fileGroupOneCount++;
     }
-    calcSVMseparationJackknife(AlignmentsOne,AlignmentsTwo,tjp,tsvmp,results);
+    calcSVMseparationJackknife(AlignmentOne,AlignmentTwo,tjp,tsvmp,results);
 }
 
-void calcSVMseparationJackknife(list <Alignments *> AlignmentsOne, list <Alignments *> AlignmentsTwo, JackknifeParameters &tjp, SampleParameters &tsp, SVM_separationResults &results)
+void calcSVMseparationJackknife(list <Alignment *> AlignmentOne, list <Alignment *> AlignmentTwo, JackknifeParameters &tjp, SampleParameters &tsp, SVM_separationResults &results)
 {
-    list <Alignments *> allAlignments;
-    for (list <Alignments *>::iterator lait = AlignmentsOne.begin();lait!=AlignmentsOne.end();lait++){
-        allAlignments.push_back(*lait);
+    list <Alignment *> allAlignment;
+    for (list <Alignment *>::iterator lait = AlignmentOne.begin();lait!=AlignmentOne.end();lait++){
+        allAlignment.push_back(*lait);
     }
-    for (list <Alignments *>::iterator lait = AlignmentsTwo.begin();lait!=AlignmentsTwo.end();lait++){
-        allAlignments.push_back(*lait);
+    for (list <Alignment *>::iterator lait = AlignmentTwo.begin();lait!=AlignmentTwo.end();lait++){
+        allAlignment.push_back(*lait);
     }
     // First get the trees. Pick outputFileNames first
     list <string> outputFileNames; 
@@ -3159,7 +3159,7 @@ void calcSVMseparationJackknife(list <Alignments *> AlignmentsOne, list <Alignme
     sprintf(randIdString,"%d%d%d",rand() % 100000,rand() % 100000,rand() % 100000);
     
     //// When are these files going to be deleted? We need to delete them at the end of this function
-    //for (list <Alignments *>::iterator lait = allAlignments.begin();lait!=allAlignments.end();lait++){
+    //for (list <Alignment *>::iterator lait = allAlignment.begin();lait!=allAlignment.end();lait++){
     //    string newFileName = tempPrefix;
     //    newFileName.append("temp_calcSVMseparationJackknife_ID");
     //    newFileName.append(randIdString);
@@ -3179,36 +3179,36 @@ void calcSVMseparationJackknife(list <Alignments *> AlignmentsOne, list <Alignme
     // We can essentially pass to getTrees the number of trees to sample from each distribution
 
 
-    //getTreesJackknife(tjp,allAlignments,outputFileNames);
+    //getTreesJackknife(tjp,allAlignment,outputFileNames);
 
     //list <string> treeFileNamesGroupOne;
     //list <string> treeFileNamesGroupTwo;
 
     // Place the output filenames into their groups according
-    // to the sizes of AlignmentsOne and AlignmentsTwo
+    // to the sizes of AlignmentOne and AlignmentTwo
     //list <string>::const_iterator lsit = outputFileNames.begin();
     //int insertOutputFileNamesCount = 0;
-    //while (insertOutputFileNamesCount < AlignmentsOne.size()){
+    //while (insertOutputFileNamesCount < AlignmentOne.size()){
     //    treeFileNamesGroupOne.push_back(*lsit);
     //    lsit++;
     //    insertOutputFileNamesCount++;
     //}
-    //while (insertOutputFileNamesCount < AlignmentsOne.size() + AlignmentsTwo.size())
+    //while (insertOutputFileNamesCount < AlignmentOne.size() + AlignmentTwo.size())
     //{
     //    treeFileNamesGroupTwo.push_back(*lsit);
     //    lsit++;
     //    insertOutputFileNamesCount++;
     //}
 
-    getTreesJackknife(tjp,tsp,AlignmentsOne,tempFileName);
+    getTreesJackknife(tjp,tsp,AlignmentOne,tempFileName);
     outputFileNameGroupOne.push_back(tempFileName);
-    getTreesJackknife(tjp,tsp,AlignmentsTwo,tempFileName);
+    getTreesJackknife(tjp,tsp,AlignmentTwo,tempFileName);
     outputFileNameGroupTwo.push_back(tempFileName);
     SampleParameters    new_tsp = tsp;
     new_tsp.SVM_sampleSize = tsp.SVM_resampleSize;
-    getTreesJackknife(tjp,new_tsp,AlignmentsOne,tempFileName);
+    getTreesJackknife(tjp,new_tsp,AlignmentOne,tempFileName);
     outputFileNameGroupOneResample.push_back(tempFileName);
-    getTreesJackknife(tjp,new_tsp,AlignmentsTwo,tempFileName);
+    getTreesJackknife(tjp,new_tsp,AlignmentTwo,tempFileName);
     outputFileNameGroupTwoResample.push_back(tempFileName); 
 
     tsp.numTreesPerFile = -1; // Signifies to sample all trees
@@ -3236,14 +3236,14 @@ void calcSVMseparationJackknife(list <Alignments *> AlignmentsOne, list <Alignme
     system(delOutputFiles.c_str());
 }
 
-void calcSVMseparationMultInd(list <Alignments *> AlignmentsOne, list <Alignments *> AlignmentsTwo, MultIndParameters &tmip, SampleParameters &tsp, SVM_separationResults &results)
+void calcSVMseparationMultInd(list <Alignment *> AlignmentOne, list <Alignment *> AlignmentTwo, MultIndParameters &tmip, SampleParameters &tsp, SVM_separationResults &results)
 {
-    list <Alignments *> allAlignments;
-    for (list <Alignments *>::iterator lait = AlignmentsOne.begin();lait!=AlignmentsOne.end();lait++){
-        allAlignments.push_back(*lait);
+    list <Alignment *> allAlignment;
+    for (list <Alignment *>::iterator lait = AlignmentOne.begin();lait!=AlignmentOne.end();lait++){
+        allAlignment.push_back(*lait);
     }
-    for (list <Alignments *>::iterator lait = AlignmentsTwo.begin();lait!=AlignmentsTwo.end();lait++){
-        allAlignments.push_back(*lait);
+    for (list <Alignment *>::iterator lait = AlignmentTwo.begin();lait!=AlignmentTwo.end();lait++){
+        allAlignment.push_back(*lait);
     }
     // First get the trees. Pick outputFileNames first
     list <string> outputFileNames; 
@@ -3252,7 +3252,7 @@ void calcSVMseparationMultInd(list <Alignments *> AlignmentsOne, list <Alignment
     sprintf(randIdString,"%d%d%d%d",(int)getpid(),rand() % 100000,rand() % 100000,rand() % 100000);
     
     // When are these files going to be deleted? We need to delete them at the end of this function
-    for (list <Alignments *>::iterator lait = allAlignments.begin();lait!=allAlignments.end();lait++){
+    for (list <Alignment *>::iterator lait = allAlignment.begin();lait!=allAlignment.end();lait++){
         string newFileName = tempPrefix;
         newFileName.append("temp_calcSVMseparationMultInd_ID");
         newFileName.append(randIdString);
@@ -3264,21 +3264,21 @@ void calcSVMseparationMultInd(list <Alignments *> AlignmentsOne, list <Alignment
         ii++;
     }
     
-    getTreesMultInd(tmip,allAlignments,outputFileNames);
+    getTreesMultInd(tmip,allAlignment,outputFileNames);
 
     list <string> treeFileNamesGroupOne;
     list <string> treeFileNamesGroupTwo;
 
     // Place the output filenames into their groups according
-    // to the sizes of AlignmentsOne and AlignmentsTwo
+    // to the sizes of AlignmentOne and AlignmentTwo
     list <string>::const_iterator lsit = outputFileNames.begin();
     int insertOutputFileNamesCount = 0;
-    while (insertOutputFileNamesCount < AlignmentsOne.size()){
+    while (insertOutputFileNamesCount < AlignmentOne.size()){
         treeFileNamesGroupOne.push_back(*lsit);
         lsit++;
         insertOutputFileNamesCount++;
     }
-    while (insertOutputFileNamesCount < AlignmentsOne.size() + AlignmentsTwo.size())
+    while (insertOutputFileNamesCount < AlignmentOne.size() + AlignmentTwo.size())
     {
         treeFileNamesGroupTwo.push_back(*lsit);
         lsit++;
@@ -3303,21 +3303,21 @@ void calcSVMseparationMultInd(list <Alignments *> AlignmentsOne, list <Alignment
 void calcSVMseparationMultInd(list <string> inputFileNames, MultIndParameters &tmip, SampleParameters &tsvmp, SVM_separationResults &results, int numGroupOne)
 {
     // Read in alignments then call calcSVMseparationJackknife using alignments
-    list <Alignments *> AlignmentsOne, AlignmentsTwo;
+    list <Alignment *> AlignmentOne, AlignmentTwo;
 
     int fileGroupOneCount = 0;
-    Alignments *tempAlignments; 
+    Alignment *tempAlignment; 
     for (list <string>::iterator lsit = inputFileNames.begin();lsit!= inputFileNames.end();lsit++){
-        tempAlignments = new Alignments(*lsit);
+        tempAlignment = new Alignment(*lsit);
         if (fileGroupOneCount < numGroupOne){
-            AlignmentsOne.push_back(tempAlignments);
+            AlignmentOne.push_back(tempAlignment);
         }
         else {
-            AlignmentsTwo.push_back(tempAlignments);
+            AlignmentTwo.push_back(tempAlignment);
         }
         fileGroupOneCount++;
     }
-    calcSVMseparationMultInd(AlignmentsOne,AlignmentsTwo,tmip,tsvmp,results);
+    calcSVMseparationMultInd(AlignmentOne,AlignmentTwo,tmip,tsvmp,results);
 }
 
 void calcSVMseparation(list <string> &treeFileNamesGroupOne, list <string> &treeFileNamesGroupTwo, SampleParameters &tsp, SVM_separationResults &results)
@@ -3570,92 +3570,92 @@ void calcSVMseparation(list <string> &treeFileNamesGroupOne, list <string> &tree
     results.secondsToCompute = endTime-startTime;
 }
 
-void getSomeJackknifeAlignments(Alignments &origAlignments, list <Alignments *> &AlignmentsOne, list <int> &AlignmentsLengths, int colSize)
+void getSomeJackknifeAlignment(Alignment &origAlignment, list <Alignment *> &AlignmentOne, list <int> &AlignmentLengths, int colSize)
 {
-    AlignmentsOne.clear();
+    AlignmentOne.clear();
 
-    Alignments *tempAlignments;
-    list <int>::const_iterator liit = AlignmentsLengths.begin();
-    for(;liit!=AlignmentsLengths.end();liit++)
+    Alignment *tempAlignment;
+    list <int>::const_iterator liit = AlignmentLengths.begin();
+    for(;liit!=AlignmentLengths.end();liit++)
     {
-        tempAlignments = new Alignments;
-        *tempAlignments = origAlignments.getJackknife(colSize, (int)floor((double)*liit/colSize));
-        AlignmentsOne.push_back(tempAlignments);
+        tempAlignment = new Alignment;
+        *tempAlignment = origAlignment.getJackknife(colSize, (int)floor((double)*liit/colSize));
+        AlignmentOne.push_back(tempAlignment);
     }
 }
 
-void getSomeJackknifeAlignments(Alignments &origAlignments, list <Alignments *> &AlignmentsOne, list <Alignments *> &AlignmentsTwo, list <int> &AlignmentsLengths, int colSize, int groupOneSize)
+void getSomeJackknifeAlignment(Alignment &origAlignment, list <Alignment *> &AlignmentOne, list <Alignment *> &AlignmentTwo, list <int> &AlignmentLengths, int colSize, int groupOneSize)
 {
-    AlignmentsOne.clear();
-    AlignmentsTwo.clear();
-    list <int>::const_iterator liit = AlignmentsLengths.begin();
+    AlignmentOne.clear();
+    AlignmentTwo.clear();
+    list <int>::const_iterator liit = AlignmentLengths.begin();
     
-    if (AlignmentsLengths.size() < 2){
-        cout << "getSomeJackknifeAlignments called with AlignmentsLengths.size() < 2" << endl;
+    if (AlignmentLengths.size() < 2){
+        cout << "getSomeJackknifeAlignment called with AlignmentLengths.size() < 2" << endl;
         exit(0);
     }
 
     int groupOneCount = 0;
-    Alignments *tempAlignments;
+    Alignment *tempAlignment;
 
-    // The first groupOneSize go in AlignmentsOne
+    // The first groupOneSize go in AlignmentOne
     while (groupOneCount < groupOneSize){
-        tempAlignments = new Alignments;
-        *tempAlignments = origAlignments.getJackknife(colSize, (int)floor((double)*liit/colSize));
-        AlignmentsOne.push_back(tempAlignments);
+        tempAlignment = new Alignment;
+        *tempAlignment = origAlignment.getJackknife(colSize, (int)floor((double)*liit/colSize));
+        AlignmentOne.push_back(tempAlignment);
         liit++;
         groupOneCount++;
     }
 
-    // The rest go in AlignmentsTwo
-    while (liit != AlignmentsLengths.end()){
-        tempAlignments = new Alignments;
-        *tempAlignments = origAlignments.getJackknife(colSize, (int)floor((double)*liit/colSize));
-        AlignmentsTwo.push_back(tempAlignments);
+    // The rest go in AlignmentTwo
+    while (liit != AlignmentLengths.end()){
+        tempAlignment = new Alignment;
+        *tempAlignment = origAlignment.getJackknife(colSize, (int)floor((double)*liit/colSize));
+        AlignmentTwo.push_back(tempAlignment);
         liit++;
     } 
 }
 
-void getSomeJackknifeAlignments(list <Alignments *> &origAlignments, list <Alignments *> &AlignmentsOne, list <Alignments *> &AlignmentsTwo, list <int> &AlignmentsLengths, int colSize, int groupOneSize)
+void getSomeJackknifeAlignment(list <Alignment *> &origAlignment, list <Alignment *> &AlignmentOne, list <Alignment *> &AlignmentTwo, list <int> &AlignmentLengths, int colSize, int groupOneSize)
 { 
-    AlignmentsOne.clear();
-    AlignmentsTwo.clear();
-    list <int>::const_iterator liit = AlignmentsLengths.begin();
-    list <Alignments *>::iterator lait;
+    AlignmentOne.clear();
+    AlignmentTwo.clear();
+    list <int>::const_iterator liit = AlignmentLengths.begin();
+    list <Alignment *>::iterator lait;
     
-    if (AlignmentsLengths.size() < 2){
-        cout << "getSomeJackknifeAlignments called with AlignmentsLengths.size() < 2" << endl;
+    if (AlignmentLengths.size() < 2){
+        cout << "getSomeJackknifeAlignment called with AlignmentLengths.size() < 2" << endl;
         exit(0);
     }
 
     int groupOneCount = 0;
-    Alignments *tempAlignments;
+    Alignment *tempAlignment;
 
-    // The first groupOneSize go in AlignmentsOne
+    // The first groupOneSize go in AlignmentOne
     while (groupOneCount < groupOneSize){
-        tempAlignments = new Alignments;
-        // Get a random alignment from origAlignments.
-        lait = origAlignments.begin();
-        int stopNum = (rand() % origAlignments.size());
+        tempAlignment = new Alignment;
+        // Get a random alignment from origAlignment.
+        lait = origAlignment.begin();
+        int stopNum = (rand() % origAlignment.size());
         for (int i=0;i<stopNum;i++) {
             lait++;
         }
-        *tempAlignments = (*lait)->getJackknife(colSize, (int)floor((double)*liit/colSize));
-        AlignmentsOne.push_back(tempAlignments);
+        *tempAlignment = (*lait)->getJackknife(colSize, (int)floor((double)*liit/colSize));
+        AlignmentOne.push_back(tempAlignment);
         liit++;
         groupOneCount++;
     }
 
-    // The rest go in AlignmentsTwo
-    while (liit != AlignmentsLengths.end()){
-        tempAlignments = new Alignments;
-        lait = origAlignments.begin();
-        int stopNum = (rand() % origAlignments.size());
+    // The rest go in AlignmentTwo
+    while (liit != AlignmentLengths.end()){
+        tempAlignment = new Alignment;
+        lait = origAlignment.begin();
+        int stopNum = (rand() % origAlignment.size());
         for (int i=0;i<stopNum;i++) {
             lait++;
         }
-        *tempAlignments = (*lait)->getJackknife(colSize, (int)floor((double)*liit/colSize));
-        AlignmentsTwo.push_back(tempAlignments);
+        *tempAlignment = (*lait)->getJackknife(colSize, (int)floor((double)*liit/colSize));
+        AlignmentTwo.push_back(tempAlignment);
         liit++;
     } 
 
@@ -3663,80 +3663,80 @@ void getSomeJackknifeAlignments(list <Alignments *> &origAlignments, list <Align
 
 
 // Should make option here to not allow any permutation where two groups are as the original
-void getSomeJackknifeAlignmentsPermute(list <Alignments *> origAlignments, list <Alignments *> &AlignmentsOne, list <Alignments *> &AlignmentsTwo, list <int> &AlignmentsLengths, int colSize, int groupOneSize, int allowAnyPermutation)
+void getSomeJackknifeAlignmentPermute(list <Alignment *> origAlignment, list <Alignment *> &AlignmentOne, list <Alignment *> &AlignmentTwo, list <int> &AlignmentLengths, int colSize, int groupOneSize, int allowAnyPermutation)
 { 
-    AlignmentsOne.clear();
-    AlignmentsTwo.clear();
-    list <int>::const_iterator liit = AlignmentsLengths.begin();
-    list <Alignments *>::iterator lait;
+    AlignmentOne.clear();
+    AlignmentTwo.clear();
+    list <int>::const_iterator liit = AlignmentLengths.begin();
+    list <Alignment *>::iterator lait;
     
-    if (AlignmentsLengths.size() < 2){
-        cout << "getSomeJackknifeAlignments called with AlignmentsLengths.size() < 2" << endl;
+    if (AlignmentLengths.size() < 2){
+        cout << "getSomeJackknifeAlignment called with AlignmentLengths.size() < 2" << endl;
         exit(0);
     }
 
     int groupOneCount = 0;
-    Alignments *tempAlignments;
+    Alignment *tempAlignment;
 
-    int firstRunAlignmentsOne = 0; // This indicates if we have used an alignment from groupTwo
-    // The first groupOneSize go in AlignmentsOne
+    int firstRunAlignmentOne = 0; // This indicates if we have used an alignment from groupTwo
+    // The first groupOneSize go in AlignmentOne
     while (groupOneCount < groupOneSize){
-        tempAlignments = new Alignments;
-        // Get a random alignment from origAlignments.
-        lait = origAlignments.begin();
-        int stopNum = (rand() % origAlignments.size());
+        tempAlignment = new Alignment;
+        // Get a random alignment from origAlignment.
+        lait = origAlignment.begin();
+        int stopNum = (rand() % origAlignment.size());
         // Make the first alignment from groupTwo at least
-        while (stopNum < groupOneSize && firstRunAlignmentsOne == 0 && allowAnyPermutation != 1) {
-            stopNum = (rand() % origAlignments.size());
+        while (stopNum < groupOneSize && firstRunAlignmentOne == 0 && allowAnyPermutation != 1) {
+            stopNum = (rand() % origAlignment.size());
         }
-        firstRunAlignmentsOne=1;
+        firstRunAlignmentOne=1;
         for (int i=0;i<stopNum;i++) {
             lait++;
         }
-        *tempAlignments = (*lait)->getJackknife(colSize, (int)floor((double)*liit/colSize));
-        AlignmentsOne.push_back(tempAlignments);
+        *tempAlignment = (*lait)->getJackknife(colSize, (int)floor((double)*liit/colSize));
+        AlignmentOne.push_back(tempAlignment);
 
         // Now that we have used alignment *lait, we should remove it from the list
-        // We can safely remove them from origAlignments since it is a local variable now
-        origAlignments.erase(lait);
+        // We can safely remove them from origAlignment since it is a local variable now
+        origAlignment.erase(lait);
 
-        liit++; // Increase the AlignmentsLengths counter
+        liit++; // Increase the AlignmentLengths counter
         groupOneCount++;
     }
 
-    // The rest go in AlignmentsTwo
-    while (liit != AlignmentsLengths.end()){
-        tempAlignments = new Alignments;
-        lait = origAlignments.begin();
-        int stopNum = (rand() % origAlignments.size());
+    // The rest go in AlignmentTwo
+    while (liit != AlignmentLengths.end()){
+        tempAlignment = new Alignment;
+        lait = origAlignment.begin();
+        int stopNum = (rand() % origAlignment.size());
         for (int i=0;i<stopNum;i++) {
             lait++;
         }
-        *tempAlignments = (*lait)->getJackknife(colSize, (int)floor((double)*liit/colSize));
-        AlignmentsTwo.push_back(tempAlignments);
+        *tempAlignment = (*lait)->getJackknife(colSize, (int)floor((double)*liit/colSize));
+        AlignmentTwo.push_back(tempAlignment);
 
         // Now that we have used alignment *lait, we should remove it from the list
-        // We can safely remove them from origAlignments since it is a local variable now
+        // We can safely remove them from origAlignment since it is a local variable now
         if (DEBUG_OUTPUT >= 1){
-            cout << "origAlignments.erase(lait)" << endl;
+            cout << "origAlignment.erase(lait)" << endl;
         }
-        origAlignments.erase(lait);
+        origAlignment.erase(lait);
 
         liit++;
     } 
 
 }
 
-void userGenerateNewAlignmentsUniform(string genCommand, list <Alignments *> &AlignmentsOne, list <Alignments *> &AlignmentsTwo, int numNewAlignments, int groupOneSize)
+void userGenerateNewAlignmentUniform(string genCommand, list <Alignment *> &AlignmentOne, list <Alignment *> &AlignmentTwo, int numNewAlignment, int groupOneSize)
 {
-    if (numNewAlignments < 2){
-        cout << "in userGenerateNewAlignmentsUniform, numNewAlignments < 2" << endl;
+    if (numNewAlignment < 2){
+        cout << "in userGenerateNewAlignmentUniform, numNewAlignment < 2" << endl;
     }
-    Alignments *tempAlignments;
+    Alignment *tempAlignment;
 
     char tmptmpStr[80];
     sprintf(tmptmpStr,"%d%d%d",rand(),rand(),rand());
-    string tempFileName = "tempuserGenerateNewAlignmentsUniform";
+    string tempFileName = "tempuserGenerateNewAlignmentUniform";
     tempFileName.append(tmptmpStr);
     tempFileName.append(".nex");
 
@@ -3748,21 +3748,21 @@ void userGenerateNewAlignmentsUniform(string genCommand, list <Alignments *> &Al
     deleteCommand.append(tempFileName);
 
     int groupOneCount = 0;
-    // The first groupOneSize go in AlignmentsOne
+    // The first groupOneSize go in AlignmentOne
     while (groupOneCount < groupOneSize){
         system(sysCommand.c_str()); // Actually generate the file
-        tempAlignments = new Alignments(tempFileName); // Read in the new file
-        AlignmentsOne.push_back(tempAlignments);
+        tempAlignment = new Alignment(tempFileName); // Read in the new file
+        AlignmentOne.push_back(tempAlignment);
         system(deleteCommand.c_str()); // delete the file
         groupOneCount++;
     }
 
-    // Rest go into AlignmentsTwo
-    for (int i=0;i<numNewAlignments-groupOneSize;i++){
+    // Rest go into AlignmentTwo
+    for (int i=0;i<numNewAlignment-groupOneSize;i++){
         system(sysCommand.c_str()); // Actually generate the file
 
-        tempAlignments = new Alignments(tempFileName); // Read in the new file
-        AlignmentsTwo.push_back(tempAlignments);
+        tempAlignment = new Alignment(tempFileName); // Read in the new file
+        AlignmentTwo.push_back(tempAlignment);
          system(deleteCommand.c_str()); // delete the file
     }
 }
