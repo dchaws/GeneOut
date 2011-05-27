@@ -65,8 +65,8 @@ public:
     double      mySeparation;
     int         doSim; 
     string      simCommand;
-                                    // 1 is jk-align, 2 is tree, 3 is no-jk
-    int         multSVMSepMethod;   // When doing multiple svm sep test, which method: jk-align, tree, no-jk
+                                    // 1 is bootstrap-align, 2 is tree, 3 is no-bootstrap
+    int         multSVMSepMethod;   // When doing multiple svm sep test, which method: bootstrap-align, tree, no-bootstrap
                             // 1 is singlesvmsep, 2 is multiplesvmsep
     int         testType;   // What test to run: single svm calc or multiple svm calc.
     string      tempPrefix;
