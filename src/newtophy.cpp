@@ -1,6 +1,6 @@
 // $Rev:  $ $Date:  $
 #include <iostream>
-#include "alignments.h"
+#include "alignment.h"
 #include <string>
 
 int DEBUG_OUTPUT = -1;
@@ -12,7 +12,7 @@ int main (int argc, char **argv)
             DEBUG_OUTPUT = 3;
         }
     }
-    Alignments myalign;
+    Alignment myalign;
 
     cin >> myalign;
     myalign.setOutputFormat(OF_PHYLIP);

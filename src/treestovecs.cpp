@@ -12,7 +12,7 @@
 #include <list>
 #include <set>
 #include <math.h>
-#include "alignments.h"
+#include "alignment.h"
 #include "debugoutput.h"
 #include "tempprefix.h"
 #include "kernelmethod.h"
