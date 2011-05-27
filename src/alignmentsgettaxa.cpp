@@ -1,6 +1,6 @@
 // $Rev: 304 $ $Date: 2009-11-04 21:28:04 -0500 (Wed, 04 Nov 2009) $
 #include <iostream>
-#include "alignments.h"
+#include "alignment.h"
 
 int DEBUG_OUTPUT = 0;
 int main (int argc, char **argv)
@@ -22,7 +22,7 @@ int main (int argc, char **argv)
         }
     }
         
-    Alignments myalign;
+    Alignment myalign;
 
     cin >> myalign;
     //myalign.setOutputFormat(OF_NEXUS);
@@ -42,7 +42,7 @@ int main (int argc, char **argv)
         while (taxaList.size() != numTaxa) {
             taxaList.insert(rand() % myalign.get_ntax());
         }
-        Alignments subalign = myalign.getTaxaSubset(taxaList);
+        Alignment subalign = myalign.getTaxaSubset(taxaList);
         subalign.setOutputFormat(OF_NEXUS);
         cout << subalign;
     }

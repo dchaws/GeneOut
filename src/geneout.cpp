@@ -201,10 +201,10 @@ int main (int argc, char **argv)
 
     // If we are working on alignments, we read them all in here.
     int numTaxa = 0;
-    list <int> inputAlignmentLengths;
-    list <int> inputAlignmentLengthsOne;
-    list <int> inputAlignmentLengthsTwo;
-    list <Alignment *> inputAlignment;
+    list <int> inputAlignmentsLengths;
+    list <int> inputAlignmentsLengthsOne;
+    list <int> inputAlignmentsLengthsTwo;
+    list <Alignment *> inputAlignments;
     list <Alignment *> origInputAlignment;
     list <Alignment *> AlignmentOne, AlignmentTwo;
     list <Alignment *> origAlignmentOne, origAlignmentTwo;
@@ -214,13 +214,13 @@ int main (int argc, char **argv)
             for (list<string>::const_iterator lsit=myGeneOutParam.inputFileNames.begin();lsit!=myGeneOutParam.inputFileNames.end();lsit++){
                 Alignment *newAlignment = new Alignment(*lsit);
                 numTaxa = newAlignment->get_ntax ();
-                inputAlignmentLengths.push_back(newAlignment->get_nchar()); 
-                inputAlignment.push_back(newAlignment);
+                inputAlignmentsLengths.push_back(newAlignment->get_nchar()); 
+                inputAlignments.push_back(newAlignment);
                 //cout << *newAlignment;
             }
             // Again, default is to compare the first input vs the rest.
             // Lets us myGeneOutParam.numGroupOne
-            list <Alignment *>::iterator lait=inputAlignment.begin();
+            list <Alignment *>::iterator lait=inputAlignments.begin();
             int groupAddCount = 0;
             AlignmentOneConcat = new Alignment;
             int firstConcatRunOne = 1;
@@ -232,7 +232,7 @@ int main (int argc, char **argv)
                 else {
                     *AlignmentOneConcat += *(*lait);
                 }
-                inputAlignmentLengthsOne.push_back((*lait)->get_nchar());
+                inputAlignmentsLengthsOne.push_back((*lait)->get_nchar());
                 AlignmentOne.push_back(*lait);
                 // Make copy of data and store in origAlignmentOne.
                 // Don't want to just put in *lait since they would both point
@@ -249,7 +249,7 @@ int main (int argc, char **argv)
             // Put rest in AlignmentTwo
             AlignmentTwoConcat = new Alignment;
             int firstConcatRunTwo = 1;
-            while(lait!=inputAlignment.end()){
+            while(lait!=inputAlignments.end()){
                 if (firstConcatRunTwo == 1){
                     firstConcatRunTwo=0;
                     *AlignmentTwoConcat = *(*lait);
@@ -257,7 +257,7 @@ int main (int argc, char **argv)
                 else {
                     *AlignmentTwoConcat += *(*lait);
                 }
-                inputAlignmentLengthsTwo.push_back((*lait)->get_nchar());
+                inputAlignmentsLengthsTwo.push_back((*lait)->get_nchar());
                 AlignmentTwo.push_back(*lait);
                 // Make copy of data and store in origAlignmentTwo.
                 // Don't want to just put in *lait since they would both point
@@ -271,7 +271,7 @@ int main (int argc, char **argv)
 
             
             ////Concat all the alignments together, except the first one.
-            //list <Alignment *>::iterator lait=inputAlignment.begin();
+            //list <Alignment *>::iterator lait=inputAlignments.begin();
             //int newColSizeCount = (int)floor((*lait)->get_nchar()/myGeneOutParam.JackknifeParam.jackknifeColSize);
             ////cout << "newColSizeCount " << newColSizeCount << endl;
             ////cout << *(*lait);
@@ -281,7 +281,7 @@ int main (int argc, char **argv)
             //Alignment *allConcatMinusFirst = new Alignment;
             //*allConcatMinusFirst = *(*lait); // Copy second alignment
             //lait++;
-            //while(lait!=inputAlignment.end()){
+            //while(lait!=inputAlignments.end()){
             //    //cout << *(*lait);
             //    *allConcatMinusFirst += *(*lait);
             //    lait++;
@@ -317,10 +317,10 @@ int main (int argc, char **argv)
                 }
                 fileCount++;
             }
-            inputAlignmentLengths.push_back(groupOneAlignmentConcat->get_nchar()); 
-            inputAlignmentLengths.push_back(groupTwoAlignmentConcat->get_nchar()); 
-            inputAlignment.push_back(groupOneAlignmentConcat);
-            inputAlignment.push_back(groupTwoAlignmentConcat);
+            inputAlignmentsLengths.push_back(groupOneAlignmentConcat->get_nchar()); 
+            inputAlignmentsLengths.push_back(groupTwoAlignmentConcat->get_nchar()); 
+            inputAlignments.push_back(groupOneAlignmentConcat);
+            inputAlignments.push_back(groupTwoAlignmentConcat);
             AlignmentOne.push_back(groupOneAlignmentConcat);
             Alignment *newAlignment = new Alignment;
             *newAlignment = (*groupOneAlignmentConcat);
@@ -331,7 +331,7 @@ int main (int argc, char **argv)
             origAlignmentTwo.push_back(newAlignment);
         }
         if (DEBUG_OUTPUT >= 1){
-            for (list <Alignment *>::iterator lait=inputAlignment.begin();lait!=inputAlignment.end();lait++){
+            for (list <Alignment *>::iterator lait=inputAlignments.begin();lait!=inputAlignments.end();lait++){
                 cout << *(*lait);
             }
         }
@@ -455,8 +455,8 @@ int main (int argc, char **argv)
                         // Cant just clear. There is dynamically allocated data here.
                         AlignmentOne.clear();
                         AlignmentTwo.clear();
-                        getSomeJackknifeAlignment(*AlignmentOneConcat,AlignmentOne,inputAlignmentLengthsOne,myGeneOutParam.JackknifeParam.jackknifeColSize);
-                        getSomeJackknifeAlignment(*AlignmentTwoConcat,AlignmentTwo,inputAlignmentLengthsTwo,myGeneOutParam.JackknifeParam.jackknifeColSize);
+                        getSomeJackknifeAlignment(*AlignmentOneConcat,AlignmentOne,inputAlignmentsLengthsOne,myGeneOutParam.JackknifeParam.jackknifeColSize);
+                        getSomeJackknifeAlignment(*AlignmentTwoConcat,AlignmentTwo,inputAlignmentsLengthsTwo,myGeneOutParam.JackknifeParam.jackknifeColSize);
                     }
                     else {
                         cout << "   Using original alignments." << endl;
@@ -577,26 +577,26 @@ int main (int argc, char **argv)
                 // data we should have option to generate from parameters instead
                 // of jackknifing.
                 if (myGeneOutParam.doSim == 1){
-                    userGenerateNewAlignmentUniform(myGeneOutParam.simCommand, AlignmentOne, AlignmentTwo,inputAlignmentLengths.size(),myGeneOutParam.numGroupOne); 
+                    userGenerateNewAlignmentUniform(myGeneOutParam.simCommand, AlignmentOne, AlignmentTwo,inputAlignmentsLengths.size(),myGeneOutParam.numGroupOne); 
                 }
                 else {
                     if (myGeneOutParam.indJackknife == 0 && myGeneOutParam.permuteOrig == 0) {
                         if (DEBUG_OUTPUT >= 0){
                             cout << "Bootstrapping alignments from concat of second group of alignments." << endl;
                         }
-                        getSomeJackknifeAlignment(*AlignmentTwoConcat,AlignmentOne,AlignmentTwo,inputAlignmentLengths,myGeneOutParam.JackknifeParam.jackknifeColSize,myGeneOutParam.numGroupOne);
+                        getSomeJackknifeAlignment(*AlignmentTwoConcat,AlignmentOne,AlignmentTwo,inputAlignmentsLengths,myGeneOutParam.JackknifeParam.jackknifeColSize,myGeneOutParam.numGroupOne);
                     }
                     if (myGeneOutParam.indJackknife == 1 && myGeneOutParam.permuteOrig == 0) {
                         if (DEBUG_OUTPUT >= 0){
                             cout << "Bootstrapping alignments from second group of alignments." << endl;
                         }
-                        getSomeJackknifeAlignment(origAlignmentTwo,AlignmentOne,AlignmentTwo,inputAlignmentLengths,myGeneOutParam.JackknifeParam.jackknifeColSize,myGeneOutParam.numGroupOne);
+                        getSomeJackknifeAlignment(origAlignmentTwo,AlignmentOne,AlignmentTwo,inputAlignmentsLengths,myGeneOutParam.JackknifeParam.jackknifeColSize,myGeneOutParam.numGroupOne);
                     }
                     if (myGeneOutParam.permuteOrig == 1) {
                         if (DEBUG_OUTPUT >= 0){
                             cout << "Permuting all alignments and bootstrapping to appropriate size." << endl;
                         }
-                        getSomeJackknifeAlignmentPermute(origInputAlignment,AlignmentOne,AlignmentTwo,inputAlignmentLengths,myGeneOutParam.JackknifeParam.jackknifeColSize,myGeneOutParam.numGroupOne,myGeneOutParam.allowAnyPermuation);
+                        getSomeJackknifeAlignmentPermute(origInputAlignment,AlignmentOne,AlignmentTwo,inputAlignmentsLengths,myGeneOutParam.JackknifeParam.jackknifeColSize,myGeneOutParam.numGroupOne,myGeneOutParam.allowAnyPermuation);
                     }
 
                 }
@@ -928,7 +928,7 @@ int main (int argc, char **argv)
                 myGeneOutParam.SampleParam.numTreesPerFile = myGeneOutParam.JackknifeParam.jackknifeCount;
                 //getTreesJackknife(myGeneOutParam.JackknifeParam, treeFileNames);
                 //getTreesJackknife(myGeneOutParam.JackknifeParam, treeFileNames);
-                getTreesJackknife(myGeneOutParam.JackknifeParam, inputAlignment, treeFileNames);
+                getTreesJackknife(myGeneOutParam.JackknifeParam, inputAlignments, treeFileNames);
             }
             if (myGeneOutParam.doMB == 1){
                 //list <Alignment *> myAlignment;
@@ -938,7 +938,7 @@ int main (int argc, char **argv)
                 //}
                 // Let getTreesJackknife open up the inputfiles
                 myGeneOutParam.SampleParam.numTreesPerFile = (myGeneOutParam.MrBayesParam.MBP_ngen/myGeneOutParam.MrBayesParam.MBP_sampleFreq);
-                getTreesMrBayes(myGeneOutParam.MrBayesParam, inputAlignment, treeFileNames, MB_results);
+                getTreesMrBayes(myGeneOutParam.MrBayesParam, inputAlignments, treeFileNames, MB_results);
             }
 
             list <list <string> >::iterator llit = treeFileNames.begin();

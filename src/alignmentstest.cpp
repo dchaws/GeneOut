@@ -1,11 +1,11 @@
 // $Rev: 304 $ $Date: 2009-11-04 21:28:04 -0500 (Wed, 04 Nov 2009) $
 #include <iostream>
-#include "alignments.h"
+#include "alignment.h"
 
 int DEBUG_OUTPUT = 3;
 int main (int argc, char **argv)
 {
-    Alignments myalign;
+    Alignment myalign;
 
     cin >> myalign;
     cout << myalign;
@@ -20,7 +20,7 @@ int main (int argc, char **argv)
     cout << myalign.delColumnsWithMissingData();
 
     cout << "Concatenating alignments" << endl;
-    Alignments A = myalign + myalign;
+    Alignment A = myalign + myalign;
     cout << A;
     //myalign += myalign;
     //cout << myalign;
