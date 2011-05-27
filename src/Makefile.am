@@ -24,5 +24,5 @@ alignmentgettaxa_SOURCES = alignmentgettaxa.cpp alignment.cpp nexus.cpp
 
 mwwtest_SOURCES = mwwtest.cpp mww.cpp
 
-EXTRA_DIST = debugoutput.h alignment.h dnadist_JC_input dnadist_JC_input_mult dnadist_JC_input_mult_TEMPLATE kernelmethod.h neighbor_input neighbor_input_mult neighbor_input_mult_TEMPLATE run_dnadist_neighbor run_dnadist_neighbor_mult runmultmrbayes nexus.h matrix.h newickworker.h mww.h tempprefix.h mbparams.h multindparams.h sampleparams.h svmresults.h nexustreefile.h
+EXTRA_DIST = debugoutput.h alignment.h kernelmethod.h run_dnadist_neighbor_mult runmultmrbayes nexus.h matrix.h newickworker.h mww.h tempprefix.h mbparams.h multindparams.h sampleparams.h svmresults.h nexustreefile.h
 

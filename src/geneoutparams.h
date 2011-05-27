@@ -70,7 +70,7 @@ public:
                             // 1 is singlesvmsep, 2 is multiplesvmsep
     int         testType;   // What test to run: single svm calc or multiple svm calc.
     string      tempPrefix;
-    int         JKStepOne;
+    int         BSStepOne;
     int         indBootstrap; // 1 means use randomly selected alignments to bootstrap/bootstrap from.
                               // 0 means to use the concatenated alignments. Default is 0.
     int         permuteOrig;  // 1 means permute original alignments and bootstrap/bootstrap to the correct size

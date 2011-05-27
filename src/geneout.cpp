@@ -100,7 +100,7 @@ int main (int argc, char **argv)
     }
 
     if (nexArgFound == 0){ // Then read in parameters from the command line
-    cout << " ***** Reading in command-line arguments *****" << endl;
+    cout << " ***** Reading in command-line arguments from Nexus file *****" << endl;
     // Lets let GeneOutParameters handle it.
     myGeneOutParam.processArg(argc,argv);
     }
@@ -449,8 +449,8 @@ int main (int argc, char **argv)
                 // Why am I repeatedly calling Mr Bayes with the same input. If we bootstrap the alignments in step 2,
                 // we should do that here also!
                 for (int i=0;i<myGeneOutParam.numInitCalc;i++){
-                    if (myGeneOutParam.JKStepOne == 1) {
-                        cout << "   Jackknifing new alignments from original." << endl;
+                    if (myGeneOutParam.BSStepOne == 1) {
+                        cout << "   Bootstrapping new alignments from original." << endl;
                         // We should bootstrap to create new alignments. Not use the original. Basically, we should copy step 2!
                         // Cant just clear. There is dynamically allocated data here.
                         AlignmentOne.clear();
@@ -550,7 +550,7 @@ int main (int argc, char **argv)
 
             Alignment *tempAlignment;
             // for 1 to myGeneOutParam.numStatTests create a new set of alignments from groupTwo using jacknifing
-            //      then for each new set of alignments, run mr bayes or jackknifing
+            //      then for each new set of alignments, run mr bayes or bootstrapping 
             //      and svm to find the separation 
             //      if (separation > pc) pval++
             // return pval/myGeneOutParam.numStatTests
@@ -575,7 +575,7 @@ int main (int argc, char **argv)
                 // Create an alignment to compare the rest to
                 // We need to be able to either bootstrap OR if we are simulating
                 // data we should have option to generate from parameters instead
-                // of jackknifing.
+                // of bootstrappin.
                 if (myGeneOutParam.doSim == 1){
                     userGenerateNewAlignmentUniform(myGeneOutParam.simCommand, AlignmentOne, AlignmentTwo,inputAlignmentsLengths.size(),myGeneOutParam.numGroupOne); 
                 }

@@ -27,7 +27,7 @@ GeneOutParameters::GeneOutParameters(std::istream &in)
 
 std::ostream& operator << (std::ostream &out, const GeneOutParameters &sGOP)
 {
-    cout << "GeneOut Class(" << &sGOP << ")" << endl;
+    //cout << "GeneOut Class(" << &sGOP << ")" << endl;
     cout << "Group one files: ";
     for (list <string>::const_iterator lsit=sGOP.inputFileNamesGroupOne.begin();lsit!=sGOP.inputFileNamesGroupOne.end();lsit++){
         cout << *lsit << " ";
@@ -39,68 +39,71 @@ std::ostream& operator << (std::ostream &out, const GeneOutParameters &sGOP)
     }
     cout << endl;
 
-    cout << "MrBayesParameters: " << endl;
-    cout << "   inputNexFiles: " << endl;
-    for (list <string>::const_iterator lsit=sGOP.MrBayesParam.inputNexFiles.begin();lsit!=sGOP.MrBayesParam.inputNexFiles.end();lsit++){
-        cout << *lsit << " ";
-    }
-    cout << endl;
-    cout << "   MBP_nst: " << sGOP.MrBayesParam.MBP_nst << endl;
-    cout << "   MBP_rates: " << sGOP.MrBayesParam.MBP_rates << endl;
-    cout << "   MBP_nruns: " << sGOP.MrBayesParam.MBP_nruns << endl;
-    cout << "   MBP_ngen: " << sGOP.MrBayesParam.MBP_ngen << endl;
-    cout << "   MBP_sampleFreq: " << sGOP.MrBayesParam.MBP_sampleFreq << endl;
-    cout << "   MBP_pathToMB: " << sGOP.MrBayesParam.MBP_pathToMB << endl;
-    cout << "   MBP_saveOutput: " << sGOP.MrBayesParam.MBP_saveOutput << endl;
-    cout << "   MPI_np: " << sGOP.MrBayesParam.MPI_np << endl;
-    cout << "   parametersBlockFileName: " << sGOP.MrBayesParam.parametersBlockFileName << endl;
-    cout << "BootstrapParameters: " << endl;
-    cout << "   inputNexFiles: " << endl;
-    for (list <string>::const_iterator lsit=sGOP.BootstrapParam.inputNexFiles.begin();lsit!=sGOP.BootstrapParam.inputNexFiles.end();lsit++){
-        cout << *lsit << " ";
-    }
-    cout << endl;
-    cout << "   bootstrapColSize: " << sGOP.BootstrapParam.bootstrapColSize << endl;
-    cout << "   bootstrapCount: " << sGOP.BootstrapParam.bootstrapCount << endl;
-    cout << "   alignToTreeCommand: " << sGOP.BootstrapParam.alignToTreeCommand << endl;
-    cout << "SampleParameters: " << endl;
-    cout << "   doSVM: " << sGOP.SampleParam.doSVM << endl;
-    cout << "   doDiffMeans: " << sGOP.SampleParam.doDiffMeans << endl;
-    cout << "   SVM_sampleUniform: " << sGOP.SampleParam.SVM_sampleUniform << endl;
-    cout << "   SVM_sampleSize: " << sGOP.SampleParam.SVM_sampleSize << endl;
-    cout << "   SVM_resampleSize: " << sGOP.SampleParam.SVM_resampleSize << endl;
-    cout << "   projectSVD: " << sGOP.SampleParam.projectSVD << endl;
-    cout << "   projectSVDcutOff: " << sGOP.SampleParam.projectSVDcutOff << endl;
-    cout << "   distanceOne: " << sGOP.SampleParam.distanceOne << endl;
-    cout << "   scaleToOne: " << sGOP.SampleParam.scaleToOne << endl;
-    cout << "   modelType: " << sGOP.SampleParam.modelType << endl;
-    cout << "   numTreesPerFile: " << sGOP.SampleParam.numTreesPerFile << endl;
-    cout << "   burninFormat: " << sGOP.SampleParam.burninFormat << endl;
-    cout << "   burninPercent: " << sGOP.SampleParam.burninPercent << endl;
-    cout << "   burninNumber: " << sGOP.SampleParam.burninNumber << endl;
+    if (DEBUG_OUTPUT >= 1)
+    {
+        cout << "MrBayesParameters: " << endl;
+        cout << "   inputNexFiles: " << endl;
+        for (list <string>::const_iterator lsit=sGOP.MrBayesParam.inputNexFiles.begin();lsit!=sGOP.MrBayesParam.inputNexFiles.end();lsit++){
+            cout << *lsit << " ";
+        }
+        cout << endl;
+        cout << "   MBP_nst: " << sGOP.MrBayesParam.MBP_nst << endl;
+        cout << "   MBP_rates: " << sGOP.MrBayesParam.MBP_rates << endl;
+        cout << "   MBP_nruns: " << sGOP.MrBayesParam.MBP_nruns << endl;
+        cout << "   MBP_ngen: " << sGOP.MrBayesParam.MBP_ngen << endl;
+        cout << "   MBP_sampleFreq: " << sGOP.MrBayesParam.MBP_sampleFreq << endl;
+        cout << "   MBP_pathToMB: " << sGOP.MrBayesParam.MBP_pathToMB << endl;
+        cout << "   MBP_saveOutput: " << sGOP.MrBayesParam.MBP_saveOutput << endl;
+        cout << "   MPI_np: " << sGOP.MrBayesParam.MPI_np << endl;
+        cout << "   parametersBlockFileName: " << sGOP.MrBayesParam.parametersBlockFileName << endl;
+        cout << "BootstrapParameters: " << endl;
+        cout << "   inputNexFiles: " << endl;
+        for (list <string>::const_iterator lsit=sGOP.BootstrapParam.inputNexFiles.begin();lsit!=sGOP.BootstrapParam.inputNexFiles.end();lsit++){
+            cout << *lsit << " ";
+        }
+        cout << endl;
+        cout << "   bootstrapColSize: " << sGOP.BootstrapParam.bootstrapColSize << endl;
+        cout << "   bootstrapCount: " << sGOP.BootstrapParam.bootstrapCount << endl;
+        cout << "   alignToTreeCommand: " << sGOP.BootstrapParam.alignToTreeCommand << endl;
+        cout << "SampleParameters: " << endl;
+        cout << "   doSVM: " << sGOP.SampleParam.doSVM << endl;
+        cout << "   doDiffMeans: " << sGOP.SampleParam.doDiffMeans << endl;
+        cout << "   SVM_sampleUniform: " << sGOP.SampleParam.SVM_sampleUniform << endl;
+        cout << "   SVM_sampleSize: " << sGOP.SampleParam.SVM_sampleSize << endl;
+        cout << "   SVM_resampleSize: " << sGOP.SampleParam.SVM_resampleSize << endl;
+        cout << "   projectSVD: " << sGOP.SampleParam.projectSVD << endl;
+        cout << "   projectSVDcutOff: " << sGOP.SampleParam.projectSVDcutOff << endl;
+        cout << "   distanceOne: " << sGOP.SampleParam.distanceOne << endl;
+        cout << "   scaleToOne: " << sGOP.SampleParam.scaleToOne << endl;
+        cout << "   modelType: " << sGOP.SampleParam.modelType << endl;
+        cout << "   numTreesPerFile: " << sGOP.SampleParam.numTreesPerFile << endl;
+        cout << "   burninFormat: " << sGOP.SampleParam.burninFormat << endl;
+        cout << "   burninPercent: " << sGOP.SampleParam.burninPercent << endl;
+        cout << "   burninNumber: " << sGOP.SampleParam.burninNumber << endl;
 
-    cout << "randGenSeed : " << sGOP.randGenSeed  << endl;
-    cout << "doMB        : " << sGOP.doMB         << endl;
-    cout << "doBootstrap : " << sGOP.doBootstrap  << endl;
-    cout << "doMultInd   : " << sGOP.doMultInd    << endl;
-    cout << "numInd      : " << sGOP.numInd       << endl;
-    cout << "noTreeCalc  : " << sGOP.noTreeCalc   << endl;
-    cout << "concatGroups: " << sGOP.concatGroups << endl;
-    cout << "numGroupOne : " << sGOP.numGroupOne  << endl;
-    cout << "statTest    : " << sGOP.statTest     << endl;
-    cout << "geneStatTest: " << sGOP.geneStatTest << endl;
-    cout << "numInitCalc : " << sGOP.numInitCalc  << endl;
-    cout << "numStatTests: " << sGOP.numStatTests << endl;
-    cout << "skipInitCalc: " << sGOP.skipInitCalc << endl;
-    cout << "mySeparation  : " << sGOP.mySeparation   << endl;
-    cout << "doSim       : " << sGOP.doSim        << endl;
-    cout << "simCommand  : " << sGOP.simCommand   << endl;
-    cout << "multSVMSepMethod  : " << sGOP.multSVMSepMethod   << endl;
-    cout << "testType    : " << sGOP.testType << endl;
-    cout << "tempPrefix  : " << sGOP.tempPrefix << endl;
-    cout << "permuteOrig : " << sGOP.permuteOrig << endl;
-    cout << "allowAnyPermuation : " << sGOP.allowAnyPermuation << endl;
-    cout << "sGOP.JKStepOne : " << sGOP.JKStepOne << endl;
+        cout << "randGenSeed : " << sGOP.randGenSeed  << endl;
+        cout << "doMB        : " << sGOP.doMB         << endl;
+        cout << "doBootstrap : " << sGOP.doBootstrap  << endl;
+        cout << "doMultInd   : " << sGOP.doMultInd    << endl;
+        cout << "numInd      : " << sGOP.numInd       << endl;
+        cout << "noTreeCalc  : " << sGOP.noTreeCalc   << endl;
+        cout << "concatGroups: " << sGOP.concatGroups << endl;
+        cout << "numGroupOne : " << sGOP.numGroupOne  << endl;
+        cout << "statTest    : " << sGOP.statTest     << endl;
+        cout << "geneStatTest: " << sGOP.geneStatTest << endl;
+        cout << "numInitCalc : " << sGOP.numInitCalc  << endl;
+        cout << "numStatTests: " << sGOP.numStatTests << endl;
+        cout << "skipInitCalc: " << sGOP.skipInitCalc << endl;
+        cout << "mySeparation  : " << sGOP.mySeparation   << endl;
+        cout << "doSim       : " << sGOP.doSim        << endl;
+        cout << "simCommand  : " << sGOP.simCommand   << endl;
+        cout << "multSVMSepMethod  : " << sGOP.multSVMSepMethod   << endl;
+        cout << "testType    : " << sGOP.testType << endl;
+        cout << "tempPrefix  : " << sGOP.tempPrefix << endl;
+        cout << "permuteOrig : " << sGOP.permuteOrig << endl;
+        cout << "allowAnyPermuation : " << sGOP.allowAnyPermuation << endl;
+        cout << "sGOP.BSStepOne : " << sGOP.BSStepOne << endl;
+    }
 
 }
 
@@ -118,7 +121,7 @@ std::istream& operator >> (std::istream &in, GeneOutParameters &sGOP)
     input = nextNexusToken(in);
     if (input != "#NEXUS"){
         if (DEBUG_OUTPUT >= 0){
-            cout << "GeneOutParameters friend operator >>, '#NEXUS' not first line" << endl;
+            cout << "Warning: GeneOutParameters friend operator >>, '#NEXUS' not first line" << endl;
         }
         // Lets not be so strict about it.
         // Seek to begining
@@ -158,7 +161,7 @@ std::istream& operator >> (std::istream &in, GeneOutParameters &sGOP)
                             sGOP.doBootstrap = 0;
                             sGOP.noTreeCalc = 0;
                         }
-                        else if (input == "JK"){
+                        else if (input == "JK" || input == "BS"){
                             sGOP.doMB = 0;
                             sGOP.doBootstrap = 1;
                             sGOP.noTreeCalc = 0;
@@ -357,13 +360,13 @@ std::istream& operator >> (std::istream &in, GeneOutParameters &sGOP)
                         }
                         readUntilSemiColonNexus(in);
                     }
-                    if (input == "JKSTEPONE"){
+                    if (input == "JKSTEPONE" || input == "BSSTEPONE"){
                         input = nextNexusTokenUpper(in);
                         if (input == "YES") {
-                            sGOP.JKStepOne = 1;
+                            sGOP.BSStepOne = 1;
                         }
                         else if (input == "NO") {
-                            sGOP.JKStepOne = 0;
+                            sGOP.BSStepOne = 0;
                         }
                         readUntilSemiColonNexus(in);
                     }
@@ -397,7 +400,7 @@ std::istream& operator >> (std::istream &in, GeneOutParameters &sGOP)
                                 cout << "Detecting \"METHOD\"." << endl;
                             }
                             input = nextNexusTokenUpper(in);
-                            if (input == "JK") {
+                            if (input == "JK" || input == "BS") {
                                 sGOP.multSVMSepMethod = 1;
                                 sGOP.noTreeCalc = 0;
                                 sGOP.statTest = 1;
@@ -412,7 +415,7 @@ std::istream& operator >> (std::istream &in, GeneOutParameters &sGOP)
                                 sGOP.statTest = 1;
                                 sGOP.geneStatTest = 0;
                             }
-                            else if (input == "NOJK") {
+                            else if (input == "NOJK" || input == "NOBS") {
                                 sGOP.multSVMSepMethod = 3;
                                 sGOP.noTreeCalc = 0;
                                 sGOP.statTest = 1;
@@ -544,8 +547,8 @@ void GeneOutParameters::init ()
     multSVMSepMethod = -1;
     testType = -1;
     tempPrefix = "";
-    JKStepOne = 0;    // Default is to use the original alignments
-    indBootstrap = 1; // 0 use concatenated alignments. 1 means use randomly selected alignments to jacknife/bootstrap data.
+    BSStepOne = 0;    // Default is to use the original alignments
+    indBootstrap = 1; // 0 use concatenated alignments. 1 means use randomly selected alignments to bootstrap data.
     permuteOrig = 0;
     allowAnyPermuation = 0; //1 means allow anything. 0 means dissallow new group one to be all from group one.
 }
@@ -870,11 +873,11 @@ void GeneOutParameters::processArg(int argc, char **argv)
                     cout << "       Setting: doDiffMeans = " << SampleParam.doDiffMeans << endl;
                 }
             }
-            else if (tempString == "JKStepOne")
+            else if (tempString == "BSStepOne")
             {
-                JKStepOne = atoi(argv[++i]); 
+                BSStepOne = atoi(argv[++i]); 
                 if (DEBUG_OUTPUT >= 0){
-                    cout << "       Setting: JKStepOne = " << JKStepOne << endl;
+                    cout << "       Setting: BSStepOne = " << BSStepOne << endl;
                 }
             }
             else if (tempString == "simCommand")
