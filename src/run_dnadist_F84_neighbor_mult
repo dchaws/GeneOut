@@ -21,6 +21,10 @@ myPrefixSed="\/tmp\/"
 rm -f infile
 touch outtree outfile
 
+
+shapeParam=0.8
+trans_tranv=3.0
+
 if [ $# -ne 2 ] 
 then
     echo "Must specifify phylip ready file to proccess and number of data"
@@ -34,35 +38,64 @@ then
 
     myrand=$RANDOM
     myrand=${myrand}$RANDOM
-    while [ $(( (myrand + 1)/2 )) -eq $(( myrand/2 )) ] || [ -e ${myPrefix}neighbor_input_mult${myrand}$$ ] || [ -e ${myPrefix}dnadist_F84-GR4_input_mult${myrand}$$ ]
+    dnadistInputFile=${myPrefix}/dnadist_F84-GR4_input_mult_${myrand}$$
+    neighborInputFile=${myPrefix}/neighbor_input_mult_${myrand}$$
+    while [ $(( (myrand + 1)/2 )) -eq $(( myrand/2 )) ] || [ -e $dnadistInputFile ] || [ -e $neighborInputFile ]
     do
         myrand=$RANDOM
         myrand=${myrand}$RANDOM
+        dnadistInputFile=${myPrefix}/dnadist_F84-GR4_input_mult_${myrand}$$
+        neighborInputFile=${myPrefix}/neighbor_input_mult_${myrand}$$
     done
+
     
-    cp $1 ${myPrefix}dnadist_tmp_infile_mult${myrand}$$
+    #cp $1 ${myPrefix}dnadist_tmp_infile_mult${myrand}$$
     
     #echo "My rand $myrand"
     
-    sed "s/RANDOM/$myrand/" neighbor_input_mult_TEMPLATE | sed "s/NUMALIGN/$2/" | sed "s/_mult/_mult${myrand}$$/" | sed "s/dnadist_tmp/${myPrefixSed}dnadist_tmp/" | sed "s/neighbor_tmp/${myPrefixSed}neighbor_tmp/" > ${myPrefix}neighbor_input_mult${myrand}$$
     
-    sed "s/NUMALIGN/$2/" dnadist_F84-GR4_input_mult_TEMPLATE | sed "s/_mult/_mult${myrand}$$/" | sed "s/dnadist_tmp/${myPrefixSed}dnadist_tmp/" > ${myPrefix}dnadist_F84-GR4_input_mult${myrand}$$
+    #sed "s/NUMALIGN/$2/" dnadist_F84-GR4_input_mult_TEMPLATE | sed "s/_mult/_mult${myrand}$$/" | sed "s/dnadist_tmp/${myPrefixSed}dnadist_tmp/" > ${myPrefix}dnadist_F84-GR4_input_mult${myrand}$$
+
+    # Write dnadist input file to control the parameters on dnadist
+    echo "$1" > $dnadistInputFile
+    echo "f" >> $dnadistInputFile
+    echo "${myPrefix}dnadist_tmp_outfile_mult${myrand}$$" >> $dnadistInputFile
+    echo "g" >> $dnadistInputFile
+    echo "t" >> $dnadistInputFile
+    echo "$trans_tranv" >> $dnadistInputFile
+    echo "m" >> $dnadistInputFile
+    echo "d" >> $dnadistInputFile
+    echo "$2" >> $dnadistInputFile
+    echo "y" >> $dnadistInputFile
+    echo "$shapeParam" >> $dnadistInputFile
+
+    #sed "s/RANDOM/$myrand/" neighbor_input_mult_TEMPLATE | sed "s/NUMALIGN/$2/" | sed "s/_mult/_mult${myrand}$$/" | sed "s/dnadist_tmp/${myPrefixSed}dnadist_tmp/" | sed "s/neighbor_tmp/${myPrefixSed}neighbor_tmp/" > ${myPrefix}neighbor_input_mult${myrand}$$
     
+    # Write neighbor input file to control the parameters for neighbor
     
-    dnadist < ${myPrefix}dnadist_F84-GR4_input_mult${myrand}$$ 2>&1 > /dev/null
-    neighbor < ${myPrefix}neighbor_input_mult${myrand}$$ 2>&1 > /dev/null
-    #dnadist < dnadist_JC_input_mult${myrand}
-    #neighbor < neighbor_input_mult${myrand} 
+    echo "${myPrefix}dnadist_tmp_outfile_mult${myrand}$$" >> $neighborInputFile
+    echo "f" >> $neighborInputFile
+    echo "${myPrefix}neighbor_tmp_outfile_mult${myrand}$$" >> $neighborInputFile
+    echo "m" >> $neighborInputFile
+    echo "$2" >> $neighborInputFile
+    echo "${myrand}" >> $neighborInputFile
+    echo "y" >> $neighborInputFile
+    echo "f" >> $neighborInputFile
+    echo "${myPrefix}neighbor_tmp_outtree_mult${myrand}$$" >> $neighborInputFile
+    
+    dnadist < $dnadistInputFile 2>&1 > /dev/null
+    neighbor < $neighborInputFile 2>&1 > /dev/null
     
     if [ ! -f ${myPrefix}neighbor_tmp_outtree_mult${myrand}$$ ]
     then
         echo "${myPrefix}neighbor_tmp_outtree_mult${myrand}$$ does not exist."
-        touch neighborfiledoesntexist.txt
+        touch neighborfiledoesntexist${myrand}$$.txt
         exit 0
     fi
     
     
-    tempAwkOut=`awk 'BEGIN {treeNumber=0} {all=all $0} /;/ {treeNumber++;print "tree rep_" treeNumber " = " all;all=""}' ${myPrefix}neighbor_tmp_outtree_mult${myrand}$$`
+    # This might be OS specific. Especially the \r part. Works on Mac OS X
+    tempAwkOut=`awk 'BEGIN {treeNumber=0} {all=all $0} /;/ {treeNumber++;print "tree rep_" treeNumber " = " all "\r";all=""}' ${myPrefix}neighbor_tmp_outtree_mult${myrand}$$`
     if [ "x$tempAwkOut" = "x" ]
     then
         awkFailed=1
@@ -80,7 +113,7 @@ then
     fi
 
     # Clean up files regardless
-    rm -f ${myPrefix}dnadist_tmp_infile_mult${myrand}$$ ${myPrefix}dnadist_tmp_outfile_mult${myrand}$$ ${myPrefix}neighbor_tmp_outfile_mult${myrand}$$ ${myPrefix}neighbor_tmp_outtree_mult${myrand}$$ ${myPrefix}neighbor_input_mult${myrand}$$ ${myPrefix}dnadist_F84-GR4_input_mult${myrand}$$
+    rm -f $dnadistInputFile $neighborInputFile ${myPrefix}neighbor_tmp_outfile_mult${myrand}$$ ${myPrefix}neighbor_tmp_outtree_mult${myrand}$$ ${myPrefix}neighbor_input_mult${myrand}$$ ${myPrefix}dnadist_tmp_outfile_mult${myrand}$$
 
 fi
 
@@ -88,7 +121,9 @@ fi
 echo "#NEXUS"
 echo "begin trees;"
 sleep 1
-echo $tempAwkOut | sed 's/;/;\n/g'
+#echo $tempAwkOut | sed 's/;/;\n/g'
+echo $tempAwkOut
+
 echo "end;"
 
 #sleep 10
