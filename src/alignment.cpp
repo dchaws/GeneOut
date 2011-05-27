@@ -824,13 +824,13 @@ Alignment Alignment::delColumnsWithMissingData()
 
 }
 
-Alignment Alignment::getJackknife(int k)
+Alignment Alignment::getBootstrap(int k)
 {
-    return getJackknife(k,(int)floor((double)nchar/k));
+    return getBootstrap(k,(int)floor((double)nchar/k));
 
 }
 
-Alignment Alignment::getJackknife(int k, int count)
+Alignment Alignment::getBootstrap(int k, int count)
 {
     Alignment returnAlignment;
 

@@ -1,4 +1,3 @@
-// $Rev: 287 $ $Date: 2009-11-01 17:41:14 -0500 (Sun, 01 Nov 2009) $
 #include <iostream>
 #include <fstream>
 #include <iomanip>

@@ -17,7 +17,7 @@
 #include "newickworker.h"
 #include "tempprefix.h"
 #include "mbparams.h"
-#include "jkparams.h"
+#include "bootstrapparams.h"
 #include "multindparams.h"
 #include "sampleparams.h"
 #include "svmresults.h"
@@ -145,18 +145,18 @@ void getTreesMrBayes(MrBayesParameters &tmbp, list <list <string> > &treeFileNam
 void getTreesMrBayes(MrBayesParameters &tmbp,list <Alignment *> &inputAlignment, list <list <string> > &treeFileNames, MrBayesResults &MB_results);
 
 /// This takes in tjp (ignoring nexInputFiles) and uses inputAlignment.
-/// It will create the trees using jackknife for each Alignment and place
+/// It will create the trees using bootstrap for each Alignment and place
 /// them in outputFileNames
-void getTreesJackknife(JackknifeParameters &tjp,list <Alignment *> &inputAlignment, list <string> outputFileNames);
+void getTreesBootstrap(BootstrapParameters &tjp,list <Alignment *> &inputAlignment, list <string> outputFileNames);
 
 /// This will only sample tsp.sampleSize many trees uniformly from the inputAlignment
 /// This will create outputFileNames, which will be one file.
-void getTreesJackknife(JackknifeParameters &tjp, SampleParameters &tsp, list <Alignment *> &inputAlignment, string &outputFileName);
+void getTreesBootstrap(BootstrapParameters &tjp, SampleParameters &tsp, list <Alignment *> &inputAlignment, string &outputFileName);
 
-void getTreesJackknife(JackknifeParameters &tjp, list <list <string> > &treeFileNames);
+void getTreesBootstrap(BootstrapParameters &tjp, list <list <string> > &treeFileNames);
 
 /// Fill treeFileNames with random names
-void getTreesJackknife(JackknifeParameters &tjp, list <Alignment *> &inputAlignment, list <list <string> > &treeFileNames);
+void getTreesBootstrap(BootstrapParameters &tjp, list <Alignment *> &inputAlignment, list <list <string> > &treeFileNames);
 
 /// This takes in tjp (ignoring nexInputFiles) and uses inputAlignment.
 /// It will create trees by randomly selecting representative individuals and place
@@ -183,9 +183,9 @@ void delete_svm_problem(svm_problem &prob);
 
 void get_svm_predictions(svm_problem &myProblem, svm_model &myModel, int &groupOnePredictCorrectCount, int &groupTwoPredictCorrectCount);
 
-void calcSVMseparationJackknife(list <string> inputFileNames, int numGroupOne, JackknifeParameters &tjp, SampleParameters &tsvmp, SVM_separationResults &results);
+void calcSVMseparationBootstrap(list <string> inputFileNames, int numGroupOne, BootstrapParameters &tjp, SampleParameters &tsvmp, SVM_separationResults &results);
 
-void calcSVMseparationJackknife(list <Alignment *> AlignmentOne, list <Alignment *> AlignmentTwo, JackknifeParameters &tjp, SampleParameters &tsvmp, SVM_separationResults &results);
+void calcSVMseparationBootstrap(list <Alignment *> AlignmentOne, list <Alignment *> AlignmentTwo, BootstrapParameters &tjp, SampleParameters &tsvmp, SVM_separationResults &results);
 
 /// This will use AlignementOne and AlignemntsTwo for input
 void calcSVMseparationMrBayes(list <Alignment *> AlignmentOne, list <Alignment *> AlignmentTwo, MrBayesParameters &tmbp, MrBayesResults &MB_results, SampleParameters &tsvmp, SVM_separationResults &results);
@@ -205,29 +205,29 @@ void calcSVMseparation(list <string> &treeFileNamesGroupOne, list <string> &tree
 /// This calls the above function, but using the same treeFileNames for the sample and resample
 void calcSVMseparation(list <string> &treeFileNamesGroupOne, list <string> &treeFileNamesGroupTwo, SampleParameters &tsp, SVM_separationResults &results);
 
-/// This will will use origAlignment to fill AlignmentOne with groupOneSize jackknifes, and 
-/// AlignmentLengths.size() - groupOneSize jackknifes in AlignmentTwo. It will create jackknife 
+/// This will will use origAlignment to fill AlignmentOne with groupOneSize bootstraps, and 
+/// AlignmentLengths.size() - groupOneSize bootstraps in AlignmentTwo. It will create bootstrap 
 /// alignments of length specified in AlignmentLengths.
 /// The new alignments will be added to to AlignmentOne and AlignmentTwo, according
 /// to groupOneSize, i.e. groupOneSize will go into AlignmentOne.
-void getSomeJackknifeAlignment(Alignment &origAlignment, list <Alignment *> &AlignmentOne, list <Alignment *> &AlignmentTwo, list <int> &AlignmentLengths, int colSize, int groupOneSize);
+void getSomeBootstrapAlignment(Alignment &origAlignment, list <Alignment *> &AlignmentOne, list <Alignment *> &AlignmentTwo, list <int> &AlignmentLengths, int colSize, int groupOneSize);
 
-/// This will use origAlignment to fill AlignmentOne with jackknifes using
+/// This will use origAlignment to fill AlignmentOne with bootstraps using
 /// AligmentsLengths as a guide for the number of characters and the number of
 /// alignments total;
-void getSomeJackknifeAlignment(Alignment &origAlignment, list <Alignment *> &AlignmentOne, list <int> &AlignmentLengths, int colSize);
+void getSomeBootstrapAlignment(Alignment &origAlignment, list <Alignment *> &AlignmentOne, list <int> &AlignmentLengths, int colSize);
 
-/// This will use origAlignment to fill AlignmentOne with jackknifes using
+/// This will use origAlignment to fill AlignmentOne with bootstraps using
 /// AligmentsLengths as a guide for the number of characters and the number of
 /// alignments total. When generating each new alignment, only one randomly
 /// selected alignment of origAlignment is used.
-void getSomeJackknifeAlignment(list <Alignment *> &origAlignment, list <Alignment *> &AlignmentOne, list <Alignment *> &AlignmentTwo, list <int> &AlignmentLengths, int colSize, int groupOneSize);
+void getSomeBootstrapAlignment(list <Alignment *> &origAlignment, list <Alignment *> &AlignmentOne, list <Alignment *> &AlignmentTwo, list <int> &AlignmentLengths, int colSize, int groupOneSize);
 
 
 /// 9/1/10 New function to take in all original alignments, permute them (sample without replacement) then bootstrap to the appropriate size
 /// This function assumes that the first groupOneSize alignments in origAlignment are the original first group.
 /// allowAnyPermutation 1, means allow any permuation, 0 means do not allow AlignmentOne to be alignments all from the original group one.
-void getSomeJackknifeAlignmentPermute(list <Alignment *> origAlignment, list <Alignment *> &AlignmentOne, list <Alignment *> &AlignmentTwo, list <int> &AlignmentLengths, int colSize, int groupOneSize, int allowAnyPermutation);
+void getSomeBootstrapAlignmentPermute(list <Alignment *> origAlignment, list <Alignment *> &AlignmentOne, list <Alignment *> &AlignmentTwo, list <int> &AlignmentLengths, int colSize, int groupOneSize, int allowAnyPermutation);
 
 /// This will call the command specified by input to generate new alignments
 /// The word 'uniform' refers to the fact that the program will be used for

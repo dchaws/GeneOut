@@ -148,8 +148,8 @@ int main (int argc, char **argv)
     }
 
 
-    if (myGeneOutParam.doMB + myGeneOutParam.doJackknife + myGeneOutParam.doMultInd % 3 != 1){
-        cout << "Must set either myGeneOutParam.doMB or myGeneOutParam.doJackknife or myGeneOutParam.doMultInd, not all or any two." << endl;
+    if (myGeneOutParam.doMB + myGeneOutParam.doBootstrap + myGeneOutParam.doMultInd % 3 != 1){
+        cout << "Must set either myGeneOutParam.doMB or myGeneOutParam.doBootstrap or myGeneOutParam.doMultInd, not all or any two." << endl;
         exit (0);
     }
     if ((int)myGeneOutParam.inputFileNames.size () < myGeneOutParam.numGroupOne){
@@ -272,7 +272,7 @@ int main (int argc, char **argv)
             
             ////Concat all the alignments together, except the first one.
             //list <Alignment *>::iterator lait=inputAlignments.begin();
-            //int newColSizeCount = (int)floor((*lait)->get_nchar()/myGeneOutParam.JackknifeParam.jackknifeColSize);
+            //int newColSizeCount = (int)floor((*lait)->get_nchar()/myGeneOutParam.BootstrapParam.bootstrapColSize);
             ////cout << "newColSizeCount " << newColSizeCount << endl;
             ////cout << *(*lait);
             //// Why just the first! Use myGeneOutParam.numGroupOne
@@ -375,12 +375,12 @@ int main (int argc, char **argv)
             calcSVMseparationMrBayes(myGeneOutParam.MrBayesParam,MB_results, myGeneOutParam.SampleParam,mySeparationResults,myGeneOutParam.numGroupOne);
 
         }
-        else if (myGeneOutParam.noTreeCalc != 1 && myGeneOutParam.doJackknife == 1){
+        else if (myGeneOutParam.noTreeCalc != 1 && myGeneOutParam.doBootstrap == 1){
             if (DEBUG_OUTPUT >= 0){
-                cout << endl << " ***** Performing Jackknife ***** " << endl << endl;
+                cout << endl << " ***** Performing Bootstraping ***** " << endl << endl;
             }
             SVM_separationResults mySeparationResults;
-            calcSVMseparationJackknife(myGeneOutParam.inputFileNames,myGeneOutParam.numGroupOne,myGeneOutParam.JackknifeParam, myGeneOutParam.SampleParam,mySeparationResults);
+            calcSVMseparationBootstrap(myGeneOutParam.inputFileNames,myGeneOutParam.numGroupOne,myGeneOutParam.BootstrapParam, myGeneOutParam.SampleParam,mySeparationResults);
         }
         else if (myGeneOutParam.noTreeCalc == 1) {
             if (DEBUG_OUTPUT >= 0){
@@ -423,7 +423,7 @@ int main (int argc, char **argv)
         if (myGeneOutParam.noTreeCalc != 1 && myGeneOutParam.geneStatTest != 1){
             if (DEBUG_OUTPUT >= 0){
                 cout << "**** Performing alignments statistical test ****" << endl;
-                if (myGeneOutParam.doJackknife == 1){
+                if (myGeneOutParam.doBootstrap == 1){
                     cout << "    Using Tree reconstruction & Bootstrapping." << endl;
                 }
                 if (myGeneOutParam.doMB == 1){
@@ -451,12 +451,12 @@ int main (int argc, char **argv)
                 for (int i=0;i<myGeneOutParam.numInitCalc;i++){
                     if (myGeneOutParam.JKStepOne == 1) {
                         cout << "   Jackknifing new alignments from original." << endl;
-                        // We should jackknife to create new alignments. Not use the original. Basically, we should copy step 2!
+                        // We should bootstrap to create new alignments. Not use the original. Basically, we should copy step 2!
                         // Cant just clear. There is dynamically allocated data here.
                         AlignmentOne.clear();
                         AlignmentTwo.clear();
-                        getSomeJackknifeAlignment(*AlignmentOneConcat,AlignmentOne,inputAlignmentsLengthsOne,myGeneOutParam.JackknifeParam.jackknifeColSize);
-                        getSomeJackknifeAlignment(*AlignmentTwoConcat,AlignmentTwo,inputAlignmentsLengthsTwo,myGeneOutParam.JackknifeParam.jackknifeColSize);
+                        getSomeBootstrapAlignment(*AlignmentOneConcat,AlignmentOne,inputAlignmentsLengthsOne,myGeneOutParam.BootstrapParam.bootstrapColSize);
+                        getSomeBootstrapAlignment(*AlignmentTwoConcat,AlignmentTwo,inputAlignmentsLengthsTwo,myGeneOutParam.BootstrapParam.bootstrapColSize);
                     }
                     else {
                         cout << "   Using original alignments." << endl;
@@ -471,8 +471,8 @@ int main (int argc, char **argv)
                     if (DEBUG_OUTPUT <= 0) {
                         DEBUG_OUTPUT = -1;
                     }
-                    if (myGeneOutParam.doJackknife == 1){
-                        calcSVMseparationJackknife(AlignmentOne,AlignmentTwo, myGeneOutParam.JackknifeParam, myGeneOutParam.SampleParam,mySeparationResults);
+                    if (myGeneOutParam.doBootstrap == 1){
+                        calcSVMseparationBootstrap(AlignmentOne,AlignmentTwo, myGeneOutParam.BootstrapParam, myGeneOutParam.SampleParam,mySeparationResults);
                     }
                     if (myGeneOutParam.doMB == 1){
                         // Unecessary. numTreesPerFile set in calcSVM...
@@ -573,30 +573,30 @@ int main (int argc, char **argv)
                 AlignmentTwo.clear();
 
                 // Create an alignment to compare the rest to
-                // We need to be able to either jackknife OR if we are simulating
+                // We need to be able to either bootstrap OR if we are simulating
                 // data we should have option to generate from parameters instead
                 // of jackknifing.
                 if (myGeneOutParam.doSim == 1){
                     userGenerateNewAlignmentUniform(myGeneOutParam.simCommand, AlignmentOne, AlignmentTwo,inputAlignmentsLengths.size(),myGeneOutParam.numGroupOne); 
                 }
                 else {
-                    if (myGeneOutParam.indJackknife == 0 && myGeneOutParam.permuteOrig == 0) {
+                    if (myGeneOutParam.indBootstrap == 0 && myGeneOutParam.permuteOrig == 0) {
                         if (DEBUG_OUTPUT >= 0){
                             cout << "Bootstrapping alignments from concat of second group of alignments." << endl;
                         }
-                        getSomeJackknifeAlignment(*AlignmentTwoConcat,AlignmentOne,AlignmentTwo,inputAlignmentsLengths,myGeneOutParam.JackknifeParam.jackknifeColSize,myGeneOutParam.numGroupOne);
+                        getSomeBootstrapAlignment(*AlignmentTwoConcat,AlignmentOne,AlignmentTwo,inputAlignmentsLengths,myGeneOutParam.BootstrapParam.bootstrapColSize,myGeneOutParam.numGroupOne);
                     }
-                    if (myGeneOutParam.indJackknife == 1 && myGeneOutParam.permuteOrig == 0) {
+                    if (myGeneOutParam.indBootstrap == 1 && myGeneOutParam.permuteOrig == 0) {
                         if (DEBUG_OUTPUT >= 0){
                             cout << "Bootstrapping alignments from second group of alignments." << endl;
                         }
-                        getSomeJackknifeAlignment(origAlignmentTwo,AlignmentOne,AlignmentTwo,inputAlignmentsLengths,myGeneOutParam.JackknifeParam.jackknifeColSize,myGeneOutParam.numGroupOne);
+                        getSomeBootstrapAlignment(origAlignmentTwo,AlignmentOne,AlignmentTwo,inputAlignmentsLengths,myGeneOutParam.BootstrapParam.bootstrapColSize,myGeneOutParam.numGroupOne);
                     }
                     if (myGeneOutParam.permuteOrig == 1) {
                         if (DEBUG_OUTPUT >= 0){
                             cout << "Permuting all alignments and bootstrapping to appropriate size." << endl;
                         }
-                        getSomeJackknifeAlignmentPermute(origInputAlignment,AlignmentOne,AlignmentTwo,inputAlignmentsLengths,myGeneOutParam.JackknifeParam.jackknifeColSize,myGeneOutParam.numGroupOne,myGeneOutParam.allowAnyPermuation);
+                        getSomeBootstrapAlignmentPermute(origInputAlignment,AlignmentOne,AlignmentTwo,inputAlignmentsLengths,myGeneOutParam.BootstrapParam.bootstrapColSize,myGeneOutParam.numGroupOne,myGeneOutParam.allowAnyPermuation);
                     }
 
                 }
@@ -605,8 +605,8 @@ int main (int argc, char **argv)
                 if (DEBUG_OUTPUT <= 0) {
                     DEBUG_OUTPUT = -1;
                 }
-                if (myGeneOutParam.doJackknife == 1){
-                    calcSVMseparationJackknife(AlignmentOne,AlignmentTwo, myGeneOutParam.JackknifeParam, myGeneOutParam.SampleParam,mySeparationResults);
+                if (myGeneOutParam.doBootstrap == 1){
+                    calcSVMseparationBootstrap(AlignmentOne,AlignmentTwo, myGeneOutParam.BootstrapParam, myGeneOutParam.SampleParam,mySeparationResults);
                 }
                 if (myGeneOutParam.doMB == 1){
                     // Unnecessary.
@@ -912,7 +912,7 @@ int main (int argc, char **argv)
             MrBayesResults MB_results;
             if (DEBUG_OUTPUT >= 0){
                 cout << "**** Performing genes statistical test ****" << endl;
-                if (myGeneOutParam.doJackknife == 1){
+                if (myGeneOutParam.doBootstrap == 1){
                     cout << "    Using Tree reconstruction & Bootstrapping." << endl;
                 }
                 if (myGeneOutParam.doMB == 1){
@@ -923,12 +923,12 @@ int main (int argc, char **argv)
             // trees once.
             list <list <string> > treeFileNames;
 
-            if (myGeneOutParam.doJackknife == 1){
-                //myGeneOutParam.JackknifeParam.inputNexFiles = myGeneOutParam.inputFileNames;
-                myGeneOutParam.SampleParam.numTreesPerFile = myGeneOutParam.JackknifeParam.jackknifeCount;
-                //getTreesJackknife(myGeneOutParam.JackknifeParam, treeFileNames);
-                //getTreesJackknife(myGeneOutParam.JackknifeParam, treeFileNames);
-                getTreesJackknife(myGeneOutParam.JackknifeParam, inputAlignments, treeFileNames);
+            if (myGeneOutParam.doBootstrap == 1){
+                //myGeneOutParam.BootstrapParam.inputNexFiles = myGeneOutParam.inputFileNames;
+                myGeneOutParam.SampleParam.numTreesPerFile = myGeneOutParam.BootstrapParam.bootstrapCount;
+                //getTreesBootstrap(myGeneOutParam.BootstrapParam, treeFileNames);
+                //getTreesBootstrap(myGeneOutParam.BootstrapParam, treeFileNames);
+                getTreesBootstrap(myGeneOutParam.BootstrapParam, inputAlignments, treeFileNames);
             }
             if (myGeneOutParam.doMB == 1){
                 //list <Alignment *> myAlignment;
@@ -936,7 +936,7 @@ int main (int argc, char **argv)
                 //    Alignment *newAlignment = new Alignment(*lsit);
                 //    myAlignment.push_back(newAlignment);
                 //}
-                // Let getTreesJackknife open up the inputfiles
+                // Let getTreesBootstrap open up the inputfiles
                 myGeneOutParam.SampleParam.numTreesPerFile = (myGeneOutParam.MrBayesParam.MBP_ngen/myGeneOutParam.MrBayesParam.MBP_sampleFreq);
                 getTreesMrBayes(myGeneOutParam.MrBayesParam, inputAlignments, treeFileNames, MB_results);
             }

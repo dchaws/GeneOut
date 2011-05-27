@@ -17,7 +17,7 @@
 #include "debugoutput.h"
 #include "nexus.h"
 #include "kernelmethod.h"
-#include "jkparams.h"
+#include "bootstrapparams.h"
 #include "mbparams.h"
 #include "sampleparams.h"
 #include "multindparams.h"
@@ -45,13 +45,13 @@ public:
 
     // Parameters for mrbayes with their default values.
     MrBayesParameters MrBayesParam;
-    JackknifeParameters JackknifeParam;
+    BootstrapParameters BootstrapParam;
     MultIndParameters MultIndParam;
     SampleParameters SampleParam;
 
     time_t      randGenSeed;
     int         doMB; // By default, do not do mr bayes
-    int         doJackknife;      // Default is to do jackknife
+    int         doBootstrap;      // Default is to do bootstrap
     int         doMultInd;
     int         numInd; // Default is 1 individual per species
     int         noTreeCalc; // Do not skip mr bayes calculation.
@@ -71,9 +71,9 @@ public:
     int         testType;   // What test to run: single svm calc or multiple svm calc.
     string      tempPrefix;
     int         JKStepOne;
-    int         indJackknife; // 1 means use randomly selected alignments to jackknife/bootstrap from.
+    int         indBootstrap; // 1 means use randomly selected alignments to bootstrap/bootstrap from.
                               // 0 means to use the concatenated alignments. Default is 0.
-    int         permuteOrig;  // 1 means permute original alignments and bootstrap/jackknife to the correct size
+    int         permuteOrig;  // 1 means permute original alignments and bootstrap/bootstrap to the correct size
                               // 0 means not.
     int         allowAnyPermuation; //1 means allow anything. 0 means dissallow new group one to be all from group one.
 
@@ -96,9 +96,9 @@ protected:
 //          -burninPercent            <burn-in percentage>\n \
 //          -burninNumber             <fixed burn-in number>\n \
 //          -randGenSeed              <random generator seed>\n \
-//          -doJackknife              <1 do jackknife, 0 not>\n \
-//          -jackknifeColSize         <number of columns (k) for jackknife >\n \
-//          -jackknifeCount           <number of jackknifes to perform>\n \
+//          -doBootstrap              <1 do bootstrap, 0 not>\n \
+//          -bootstrapColSize         <number of columns (k) for bootstrap >\n \
+//          -bootstrapCount           <number of bootstraps to perform>\n \
 //          -doMultInd                <1 do multInd, 0 not>\n \
 //          -numInd                   <number of ind per species, assumed grouped sequentially>\n \
 //          -numTreesReconstruct      <number of trees to reconstruct>\n \

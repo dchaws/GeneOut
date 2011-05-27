@@ -54,15 +54,15 @@ std::ostream& operator << (std::ostream &out, const GeneOutParameters &sGOP)
     cout << "   MBP_saveOutput: " << sGOP.MrBayesParam.MBP_saveOutput << endl;
     cout << "   MPI_np: " << sGOP.MrBayesParam.MPI_np << endl;
     cout << "   parametersBlockFileName: " << sGOP.MrBayesParam.parametersBlockFileName << endl;
-    cout << "JackknifeParameters: " << endl;
+    cout << "BootstrapParameters: " << endl;
     cout << "   inputNexFiles: " << endl;
-    for (list <string>::const_iterator lsit=sGOP.JackknifeParam.inputNexFiles.begin();lsit!=sGOP.JackknifeParam.inputNexFiles.end();lsit++){
+    for (list <string>::const_iterator lsit=sGOP.BootstrapParam.inputNexFiles.begin();lsit!=sGOP.BootstrapParam.inputNexFiles.end();lsit++){
         cout << *lsit << " ";
     }
     cout << endl;
-    cout << "   jackknifeColSize: " << sGOP.JackknifeParam.jackknifeColSize << endl;
-    cout << "   jackknifeCount: " << sGOP.JackknifeParam.jackknifeCount << endl;
-    cout << "   alignToTreeCommand: " << sGOP.JackknifeParam.alignToTreeCommand << endl;
+    cout << "   bootstrapColSize: " << sGOP.BootstrapParam.bootstrapColSize << endl;
+    cout << "   bootstrapCount: " << sGOP.BootstrapParam.bootstrapCount << endl;
+    cout << "   alignToTreeCommand: " << sGOP.BootstrapParam.alignToTreeCommand << endl;
     cout << "SampleParameters: " << endl;
     cout << "   doSVM: " << sGOP.SampleParam.doSVM << endl;
     cout << "   doDiffMeans: " << sGOP.SampleParam.doDiffMeans << endl;
@@ -81,7 +81,7 @@ std::ostream& operator << (std::ostream &out, const GeneOutParameters &sGOP)
 
     cout << "randGenSeed : " << sGOP.randGenSeed  << endl;
     cout << "doMB        : " << sGOP.doMB         << endl;
-    cout << "doJackknife : " << sGOP.doJackknife  << endl;
+    cout << "doBootstrap : " << sGOP.doBootstrap  << endl;
     cout << "doMultInd   : " << sGOP.doMultInd    << endl;
     cout << "numInd      : " << sGOP.numInd       << endl;
     cout << "noTreeCalc  : " << sGOP.noTreeCalc   << endl;
@@ -155,17 +155,17 @@ std::istream& operator >> (std::istream &in, GeneOutParameters &sGOP)
                         input = nextNexusTokenUpper(in);
                         if (input == "MB"){
                             sGOP.doMB = 1;
-                            sGOP.doJackknife = 0;
+                            sGOP.doBootstrap = 0;
                             sGOP.noTreeCalc = 0;
                         }
                         else if (input == "JK"){
                             sGOP.doMB = 0;
-                            sGOP.doJackknife = 1;
+                            sGOP.doBootstrap = 1;
                             sGOP.noTreeCalc = 0;
                         }
                         else if (input == "TREES"){
                             sGOP.doMB = 0;
-                            sGOP.doJackknife = 0;
+                            sGOP.doBootstrap = 0;
                             sGOP.noTreeCalc = 1;
                         }
                         readUntilSemiColonNexus(in);
@@ -244,26 +244,26 @@ std::istream& operator >> (std::istream &in, GeneOutParameters &sGOP)
                             input = nextNexusTokenUpper(in);
                         }
                     }
-                    if (input == "JKP"){
+                    if (input == "JKP" || input == "BSP" ){ // JKP is for legacy support.
                         input = nextNexusTokenUpper(in);
                         while (input != ";"){
                             if (input == "COLSIZE"){
                                 input = nextNexusToken(in);
                                 errorCheckNexusToken(input,"=");
                                 input = nextNexusNumber(in);
-                                sGOP.JackknifeParam.jackknifeColSize = atoi(input.c_str());
+                                sGOP.BootstrapParam.bootstrapColSize = atoi(input.c_str());
                             }
                             else if (input == "COUNT"){
                                 input = nextNexusToken(in);
                                 errorCheckNexusToken(input,"=");
                                 input = nextNexusNumber(in);
-                                sGOP.JackknifeParam.jackknifeCount = atoi(input.c_str());
+                                sGOP.BootstrapParam.bootstrapCount = atoi(input.c_str());
                             }
                             else if (input == "ALIGNTOTREECOMMAND"){
                                 input = nextNexusToken(in);
                                 errorCheckNexusToken(input,"=");
                                 input = nextQuoteBlock(in);
-                                sGOP.JackknifeParam.alignToTreeCommand = input;
+                                sGOP.BootstrapParam.alignToTreeCommand = input;
                             }
                             input = nextNexusTokenUpper(in);
                         }
@@ -450,7 +450,7 @@ std::istream& operator >> (std::istream &in, GeneOutParameters &sGOP)
                                     input = nextNexusToken(in);
                                     errorCheckNexusToken(input,"=");
                                     input = nextNexusNumber(in);
-                                    sGOP.indJackknife = atoi(input.c_str());
+                                    sGOP.indBootstrap = atoi(input.c_str());
                                 }
                                 else if (input == "PERMUTE"){
                                     input = nextNexusToken(in);
@@ -500,9 +500,9 @@ void GeneOutParameters::init ()
     // Parameters for MPI implementation of mr bayes.
     MrBayesParam.MPI_np = 1; // Number of processors to use. 1 means no mpi
 
-    JackknifeParam.jackknifeColSize = 1; // Default
-    JackknifeParam.jackknifeCount = 1000; // Default
-    JackknifeParam.alignToTreeCommand = "./run_dnadist_neighbor_mult"; // Default
+    BootstrapParam.bootstrapColSize = 1; // Default
+    BootstrapParam.bootstrapCount = 1000; // Default
+    BootstrapParam.alignToTreeCommand = "./run_dnadist_neighbor_mult"; // Default
 
     MultIndParam.numTreesReconstruct = 1000; 
     MultIndParam.alignToTreeCommand = "./run_dnadist_neighbor_mult"; // Default
@@ -526,7 +526,7 @@ void GeneOutParameters::init ()
 
     randGenSeed  = 0;
     doMB = 0; // By default, do not do mr bayes
-    doJackknife = 1;      // Default is to do jackknife
+    doBootstrap = 1;      // Default is to do bootstrap
     doMultInd = 0;
     numInd = 1; // Default is 1 individual per species
     noTreeCalc = 0; // Do not skip mr bayes calculation.
@@ -545,7 +545,7 @@ void GeneOutParameters::init ()
     testType = -1;
     tempPrefix = "";
     JKStepOne = 0;    // Default is to use the original alignments
-    indJackknife = 1; // 0 use concatenated alignments. 1 means use randomly selected alignments to jacknife/bootstrap data.
+    indBootstrap = 1; // 0 use concatenated alignments. 1 means use randomly selected alignments to jacknife/bootstrap data.
     permuteOrig = 0;
     allowAnyPermuation = 0; //1 means allow anything. 0 means dissallow new group one to be all from group one.
 }
@@ -575,7 +575,7 @@ void GeneOutParameters::processArg(int argc, char **argv)
             {
                 doMB = atoi(argv[++i]);
                 if (doMB == 1){
-                    doJackknife = 0;
+                    doBootstrap = 0;
                     doMultInd = 0;
                 }
                 if (DEBUG_OUTPUT >= 0){
@@ -663,38 +663,38 @@ void GeneOutParameters::processArg(int argc, char **argv)
                     cout << "       Setting: randGenSeed = " << randGenSeed << endl;
                 }
             }
-            else if (tempString == "doJackknife")
+            else if (tempString == "doBootstrap")
             {
-                doJackknife = atoi(argv[++i]); 
-                if (doJackknife == 1){
+                doBootstrap = atoi(argv[++i]); 
+                if (doBootstrap == 1){
                     doMB = 0;
                     doMultInd = 0;
                 }
                 if (DEBUG_OUTPUT >= 0){
-                    cout << "       Setting: doJackknife = " << doJackknife << endl;
+                    cout << "       Setting: doBootstrap = " << doBootstrap << endl;
                 }
                 SampleParam.burninFormat = 1;
                 SampleParam.burninNumber = 0;
             }
-            else if (tempString == "jackknifeColSize")
+            else if (tempString == "bootstrapColSize")
             {
-                JackknifeParam.jackknifeColSize = atoi(argv[++i]); 
+                BootstrapParam.bootstrapColSize = atoi(argv[++i]); 
                 if (DEBUG_OUTPUT >= 0){
-                    cout << "       Setting: jackknifeColSize = " << JackknifeParam.jackknifeColSize << endl;
+                    cout << "       Setting: bootstrapColSize = " << BootstrapParam.bootstrapColSize << endl;
                 }
             }
-            else if (tempString == "jackknifeCount")
+            else if (tempString == "bootstrapCount")
             {
-                JackknifeParam.jackknifeCount = atoi(argv[++i]); 
+                BootstrapParam.bootstrapCount = atoi(argv[++i]); 
                 if (DEBUG_OUTPUT >= 0){
-                    cout << "       Setting: jackknifeCount = " << JackknifeParam.jackknifeCount << endl;
+                    cout << "       Setting: bootstrapCount = " << BootstrapParam.bootstrapCount << endl;
                 }
             }
             else if (tempString == "doMultInd")
             {
                 doMultInd = atoi(argv[++i]); 
                 if (doMultInd == 1){
-                    doJackknife = 0;
+                    doBootstrap = 0;
                     doMB = 0;
                 }
                 if (DEBUG_OUTPUT >= 0){
@@ -717,10 +717,10 @@ void GeneOutParameters::processArg(int argc, char **argv)
             }
             else if (tempString == "alignToTreeCommand")
             {
-                JackknifeParam.alignToTreeCommand = argv[++i]; 
-                MultIndParam.alignToTreeCommand = JackknifeParam.alignToTreeCommand;
+                BootstrapParam.alignToTreeCommand = argv[++i]; 
+                MultIndParam.alignToTreeCommand = BootstrapParam.alignToTreeCommand;
                 if (DEBUG_OUTPUT >= 0){
-                    cout << "       Setting: alignToTreeCommand = " << JackknifeParam.alignToTreeCommand << endl;
+                    cout << "       Setting: alignToTreeCommand = " << BootstrapParam.alignToTreeCommand << endl;
                 }
             }
             else if (tempString == "tempPrefix")

@@ -1,6 +1,6 @@
 bin_PROGRAMS = geneout alignmentgettaxa alignmenttest permutationtest bepr treestovecs kerneltricktest mwwtest geneoutparameterstest calcseqdiv newtophy bootstrap
 
-geneout_SOURCES = geneout.cpp kernelmethod.cpp alignment.cpp nexus.cpp matrix.cpp newickworker.cpp mww.cpp svmresults.cpp nexustreefile.cpp treefuncs.cpp geneoutparams.cpp jkparams.h treefuncs.h mbresults.h geneoutparams.h
+geneout_SOURCES = geneout.cpp kernelmethod.cpp alignment.cpp nexus.cpp matrix.cpp newickworker.cpp mww.cpp svmresults.cpp nexustreefile.cpp treefuncs.cpp geneoutparams.cpp bootstrapparams.h treefuncs.h mbresults.h geneoutparams.h
 
 permutationtest_SOURCES = permutationtest.cpp kernelmethod.cpp alignment.cpp nexus.cpp matrix.cpp newickworker.cpp nexustreefile.cpp treefuncs.cpp
 

@@ -1,5 +1,3 @@
-// $Rev: 776 $ $Date: 2011-02-10 12:00:19 -0500 (Thu, 10 Feb 2011) $
-
 /** \file kernelmethod.cpp */
 
 #include "newickworker.h"
@@ -2113,29 +2111,29 @@ void getTreesMrBayes(MrBayesParameters &tmbp,list <Alignment *> &inputAlignment,
     }
 }
 
-void getTreesJackknife(JackknifeParameters &tjp,list <Alignment *> &inputAlignment, list <string> outputFileNames)
+void getTreesBootstrap(BootstrapParameters &tjp,list <Alignment *> &inputAlignment, list <string> outputFileNames)
 {
     if (inputAlignment.size() != outputFileNames.size()){
-        cout << "getTreesJackknife: inputAlignment.size() != outputFileNames.size()" << endl;
+        cout << "getTreesBootstrap: inputAlignment.size() != outputFileNames.size()" << endl;
         exit (0);
     }
     char randIdString[80];
     sprintf(randIdString,"%d%d%d%d",(int)getpid(),rand() % 100000,rand() % 100000,rand() % 100000);
-    string tempJackknifeFileName = tempPrefix;
-    tempJackknifeFileName.append("tempjackknifefile_ID");
-    tempJackknifeFileName.append(randIdString);
-    tempJackknifeFileName.append("_.nex");
+    string tempBootstrapFileName = tempPrefix;
+    tempBootstrapFileName.append("tempbootstrapfile_ID");
+    tempBootstrapFileName.append(randIdString);
+    tempBootstrapFileName.append("_.nex");
 
-    fstream tempJackknifeFile;
-    //string runalignToTreeCommand = "./run_dnadist_neighbor_mult tempjackknifefile.nex ";
+    fstream tempBootstrapFile;
+    //string runalignToTreeCommand = "./run_dnadist_neighbor_mult tempbootstrapfile.nex ";
     //string runalignToTreeCommand = "./run_dnadist_neighbor_mult ";
     string runalignToTreeCommand = tjp.alignToTreeCommand;
     runalignToTreeCommand.append(" ");
-    runalignToTreeCommand.append(tempJackknifeFileName);
+    runalignToTreeCommand.append(tempBootstrapFileName);
     runalignToTreeCommand.append(" ");
 
     char tmpStr[200];
-    sprintf(tmpStr,"%d",tjp.jackknifeCount);
+    sprintf(tmpStr,"%d",tjp.bootstrapCount);
     runalignToTreeCommand.append(tmpStr);    
     runalignToTreeCommand.append(" >> ");
     string tempCommandStr;
@@ -2160,10 +2158,10 @@ void getTreesJackknife(JackknifeParameters &tjp,list <Alignment *> &inputAlignme
         //    exit(0);
         //}
 
-        //tempJackknifeFile.open("tempjackknifefile.nex",fstream::out);
-        tempJackknifeFile.open(tempJackknifeFileName.c_str(),fstream::out);
-        if (!tempJackknifeFile.good ()){
-            cout << "Can not open " << tempJackknifeFileName << endl;
+        //tempBootstrapFile.open("tempbootstrapfile.nex",fstream::out);
+        tempBootstrapFile.open(tempBootstrapFileName.c_str(),fstream::out);
+        if (!tempBootstrapFile.good ()){
+            cout << "Can not open " << tempBootstrapFileName << endl;
             exit(0);
         }
         
@@ -2173,23 +2171,23 @@ void getTreesJackknife(JackknifeParameters &tjp,list <Alignment *> &inputAlignme
         //runFile << "begin trees;\n";
         //runFile.close();
 
-        int tenPercent=(int)floor((double)tjp.jackknifeCount/10);
-        int jackknifeStartTime = time(0);
-        int jackknifeInnerStartTime = time(0);
-        for (int l=0;l<tjp.jackknifeCount;l++){
+        int tenPercent=(int)floor((double)tjp.bootstrapCount/10);
+        int bootstrapStartTime = time(0);
+        int bootstrapInnerStartTime = time(0);
+        for (int l=0;l<tjp.bootstrapCount;l++){
             if (DEBUG_OUTPUT >= 2){
                 if (((l+1) % tenPercent) == 0){
                     cout << "   " << setw(3) << 10*(l+1)/tenPercent << "%";
                     int tempEndTime = time(0);
-                    cout << "   " << tempEndTime - jackknifeInnerStartTime << " seconds." << endl;
-                    jackknifeInnerStartTime = time(0);
+                    cout << "   " << tempEndTime - bootstrapInnerStartTime << " seconds." << endl;
+                    bootstrapInnerStartTime = time(0);
                 }
             }
-            Alignment jackAlignment = (*lait)->getJackknife(tjp.jackknifeColSize);
+            Alignment jackAlignment = (*lait)->getBootstrap(tjp.bootstrapColSize);
             jackAlignment.setOutputFormat(OF_PHYLIP);
-            tempJackknifeFile << jackAlignment;
+            tempBootstrapFile << jackAlignment;
         }
-        tempJackknifeFile.close();
+        tempBootstrapFile.close();
         //Now run program to generate tree and append to tempCommandStr
         if (DEBUG_OUTPUT >= 0){
             cout << "Running: \"" << tempCommandStr << "\"" << endl;
@@ -2197,9 +2195,9 @@ void getTreesJackknife(JackknifeParameters &tjp,list <Alignment *> &inputAlignme
         // Perhaps with MAC system, can not append to this file.
         system(tempCommandStr.c_str());
 
-        int jackknifeEndTime = time(0);
+        int bootstrapEndTime = time(0);
         if (DEBUG_OUTPUT >= 0){
-            cout << "Total seconds: " << jackknifeEndTime - jackknifeStartTime << endl;
+            cout << "Total seconds: " << bootstrapEndTime - bootstrapStartTime << endl;
         }
         
         // Place the end at the end of the filename
@@ -2240,35 +2238,35 @@ void getTreesJackknife(JackknifeParameters &tjp,list <Alignment *> &inputAlignme
         //    runFile.close ();
         //}
         // Lets delete the tempfile, so we don't unkownling use it again
-        string delTempJackknifeFile = "rm -f ";
-        delTempJackknifeFile.append(tempJackknifeFileName);
-        system(delTempJackknifeFile.c_str()); 
+        string delTempBootstrapFile = "rm -f ";
+        delTempBootstrapFile.append(tempBootstrapFileName);
+        system(delTempBootstrapFile.c_str()); 
         lait++;
         lsit++;
     }
 }
 
-void getTreesJackknife(JackknifeParameters &tjp, SampleParameters &tsp, list <Alignment *> &inputAlignment, string &outputFileName)
+void getTreesBootstrap(BootstrapParameters &tjp, SampleParameters &tsp, list <Alignment *> &inputAlignment, string &outputFileName)
 {
     char randIdString[80];
     sprintf(randIdString,"%d%d%d%d",(int)getpid(),rand() % 100000,rand() % 100000,rand() % 100000);
-    string tempJackknifeFileName = tempPrefix;
-    tempJackknifeFileName.append("tempjackknifefile_ID");
-    tempJackknifeFileName.append(randIdString);
-    tempJackknifeFileName.append("_.nex");
+    string tempBootstrapFileName = tempPrefix;
+    tempBootstrapFileName.append("tempbootstrapfile_ID");
+    tempBootstrapFileName.append(randIdString);
+    tempBootstrapFileName.append("_.nex");
 
     outputFileName = tempPrefix;
-    outputFileName.append("temp_calcSVMseparationJackknife_ID");
+    outputFileName.append("temp_calcSVMseparationBootstrap_ID");
     sprintf(randIdString,"%d%d%d%d",(int)getpid(),rand() % 100000,rand() % 100000,rand() % 100000);
     outputFileName.append(randIdString);
     outputFileName.append("_.nex");
 
-    fstream tempJackknifeFile;
-    //string runalignToTreeCommand = "./run_dnadist_neighbor_mult tempjackknifefile.nex ";
+    fstream tempBootstrapFile;
+    //string runalignToTreeCommand = "./run_dnadist_neighbor_mult tempbootstrapfile.nex ";
     //string runalignToTreeCommand = "./run_dnadist_neighbor_mult ";
     string runalignToTreeCommand = tjp.alignToTreeCommand;
     runalignToTreeCommand.append(" ");
-    runalignToTreeCommand.append(tempJackknifeFileName);
+    runalignToTreeCommand.append(tempBootstrapFileName);
     runalignToTreeCommand.append(" ");
 
     char tmpStr[200];
@@ -2277,7 +2275,7 @@ void getTreesJackknife(JackknifeParameters &tjp, SampleParameters &tsp, list <Al
     runalignToTreeCommand.append(" >> ");
     runalignToTreeCommand.append(outputFileName);
     if (DEBUG_OUTPUT >= 2) {
-        cout << "getTreesJackknife(2): runalignToTreeCommand = " << runalignToTreeCommand << endl;
+        cout << "getTreesBootstrap(2): runalignToTreeCommand = " << runalignToTreeCommand << endl;
     }
 
     // REPLACE WITH UNIFORM -DAVE 9/22/10
@@ -2316,9 +2314,9 @@ void getTreesJackknife(JackknifeParameters &tjp, SampleParameters &tsp, list <Al
     //    exit(0);
     //}
 
-    tempJackknifeFile.open(tempJackknifeFileName.c_str(),fstream::out);
-    if (!tempJackknifeFile.good ()){
-        cout << "Can not open " << tempJackknifeFileName << endl;
+    tempBootstrapFile.open(tempBootstrapFileName.c_str(),fstream::out);
+    if (!tempBootstrapFile.good ()){
+        cout << "Can not open " << tempBootstrapFileName << endl;
         exit(0);
     }
     
@@ -2329,38 +2327,38 @@ void getTreesJackknife(JackknifeParameters &tjp, SampleParameters &tsp, list <Al
 
     list <Alignment *>::iterator lait=inputAlignment.begin();
     int i = 0;
-    int jackknifeStartTime = time(0);
+    int bootstrapStartTime = time(0);
     while (lait!=inputAlignment.end()){
         int tenPercent=(int)floor((double)tsp.SVM_sampleSize/10);
-        int jackknifeInnerStartTime = time(0);
+        int bootstrapInnerStartTime = time(0);
         for (int l=0;l<samplesPerAlignment[i];l++){
             if (DEBUG_OUTPUT >= 2){
                 if (((l+1) % tenPercent) == 0){
                     cout << "   " << setw(3) << 10*(l+1)/tenPercent << "%";
                     int tempEndTime = time(0);
-                    cout << "   " << tempEndTime - jackknifeInnerStartTime << " seconds." << endl;
-                    jackknifeInnerStartTime = time(0);
+                    cout << "   " << tempEndTime - bootstrapInnerStartTime << " seconds." << endl;
+                    bootstrapInnerStartTime = time(0);
                 }
             }
-            Alignment jackAlignment = (*lait)->getJackknife(tjp.jackknifeColSize);
+            Alignment jackAlignment = (*lait)->getBootstrap(tjp.bootstrapColSize);
             jackAlignment.setOutputFormat(OF_PHYLIP);
-            tempJackknifeFile << jackAlignment;
+            tempBootstrapFile << jackAlignment;
         }
 
         
         lait++;
         i++;
     }
-    tempJackknifeFile.close();
+    tempBootstrapFile.close();
     //Now run program to generate tree and append to tempCommandStr
     if (DEBUG_OUTPUT >= 0){
         cout << "Running: \"" << runalignToTreeCommand << "\"" << endl;
     }
     // Perhaps with MAC system, can not append to this file.
     system(runalignToTreeCommand.c_str());
-    int jackknifeEndTime = time(0);
+    int bootstrapEndTime = time(0);
     if (DEBUG_OUTPUT >= 0){
-        cout << "Total seconds: " << jackknifeEndTime - jackknifeStartTime << endl;
+        cout << "Total seconds: " << bootstrapEndTime - bootstrapStartTime << endl;
     }
 
     // Place the end at the end of the filename
@@ -2401,16 +2399,16 @@ void getTreesJackknife(JackknifeParameters &tjp, SampleParameters &tsp, list <Al
     //    runFile.close ();
     //}
     // Lets delete the tempfile, so we don't unknowing use it again
-    string delTempJackknifeFile = "rm -f ";
-    delTempJackknifeFile.append(tempJackknifeFileName);
-    system(delTempJackknifeFile.c_str()); 
+    string delTempBootstrapFile = "rm -f ";
+    delTempBootstrapFile.append(tempBootstrapFileName);
+    system(delTempBootstrapFile.c_str()); 
 }
 
 
-void getTreesJackknife(JackknifeParameters &tjp, list <list <string> > &treeFileNames)
+void getTreesBootstrap(BootstrapParameters &tjp, list <list <string> > &treeFileNames)
 {
     // Now we should just open all the alignments, and pass the appropriate parameters to
-    // void getTreesJackknife(JackknifeParameters &tjp,list <Alignment> &inputAlignment, list <string> outputFileNames)
+    // void getTreesBootstrap(BootstrapParameters &tjp,list <Alignment> &inputAlignment, list <string> outputFileNames)
     list <Alignment *> myAlignment;
     list <string> outputFileNames;
     string      fileNamePostfix = "_DNADIST_and_NEIGHBOR_OUT";
@@ -2429,7 +2427,7 @@ void getTreesJackknife(JackknifeParameters &tjp, list <list <string> > &treeFile
         myAlignment.push_back(newAlignment);
         //cout << "newAlignment" << endl << newAlignment;
     }
-    getTreesJackknife(tjp,myAlignment,outputFileNames);
+    getTreesBootstrap(tjp,myAlignment,outputFileNames);
     //Lets clean up myAlignment. 
     for (list <Alignment *>::iterator lait = myAlignment.begin();lait!= myAlignment.end();lait++){
         delete *lait;
@@ -2437,7 +2435,7 @@ void getTreesJackknife(JackknifeParameters &tjp, list <list <string> > &treeFile
     myAlignment.clear();
 }
 
-void getTreesJackknife(JackknifeParameters &tjp, list <Alignment *> &inputAlignment, list <list <string> > &treeFileNames)
+void getTreesBootstrap(BootstrapParameters &tjp, list <Alignment *> &inputAlignment, list <list <string> > &treeFileNames)
 {
     string tempAlignmentBaseName = tempPrefix;
     tempAlignmentBaseName.append("tempalignments_ID");
@@ -2461,7 +2459,7 @@ void getTreesJackknife(JackknifeParameters &tjp, list <Alignment *> &inputAlignm
         tempFileCount++;
     }
 
-    getTreesJackknife(tjp,inputAlignment,outputFileNames);
+    getTreesBootstrap(tjp,inputAlignment,outputFileNames);
 }
 
 void getTreesMultInd(MultIndParameters &tmip,list <Alignment *> &inputAlignment, list <string> outputFileNames)
@@ -2601,9 +2599,9 @@ void getTreesMultInd(MultIndParameters &tmip,list <Alignment *> &inputAlignment,
             runFile.close ();
         }
         // Lets delete the tempfile, so we don't unknownling use it again.
-        string delTempJackknifeFile = "rm -f ";
-        delTempJackknifeFile.append(tempMultIndFileName);
-        system(delTempJackknifeFile.c_str()); 
+        string delTempBootstrapFile = "rm -f ";
+        delTempBootstrapFile.append(tempMultIndFileName);
+        system(delTempBootstrapFile.c_str()); 
         lait++;
         lsit++;
     }
@@ -3118,9 +3116,9 @@ void calcSVMseparationMrBayes(MrBayesParameters &tmbp, MrBayesResults &MB_result
     system(delOutputFiles.c_str());
 }
 
-void calcSVMseparationJackknife(list <string> inputFileNames, int numGroupOne, JackknifeParameters &tjp, SampleParameters &tsvmp, SVM_separationResults &results)
+void calcSVMseparationBootstrap(list <string> inputFileNames, int numGroupOne, BootstrapParameters &tjp, SampleParameters &tsvmp, SVM_separationResults &results)
 {
-    // Read in alignments then call calcSVMseparationJackknife using alignments
+    // Read in alignments then call calcSVMseparationBootstrap using alignments
     list <Alignment *> AlignmentOne, AlignmentTwo;
 
     int fileGroupOneCount = 0;
@@ -3135,10 +3133,10 @@ void calcSVMseparationJackknife(list <string> inputFileNames, int numGroupOne, J
         }
         fileGroupOneCount++;
     }
-    calcSVMseparationJackknife(AlignmentOne,AlignmentTwo,tjp,tsvmp,results);
+    calcSVMseparationBootstrap(AlignmentOne,AlignmentTwo,tjp,tsvmp,results);
 }
 
-void calcSVMseparationJackknife(list <Alignment *> AlignmentOne, list <Alignment *> AlignmentTwo, JackknifeParameters &tjp, SampleParameters &tsp, SVM_separationResults &results)
+void calcSVMseparationBootstrap(list <Alignment *> AlignmentOne, list <Alignment *> AlignmentTwo, BootstrapParameters &tjp, SampleParameters &tsp, SVM_separationResults &results)
 {
     list <Alignment *> allAlignment;
     for (list <Alignment *>::iterator lait = AlignmentOne.begin();lait!=AlignmentOne.end();lait++){
@@ -3161,7 +3159,7 @@ void calcSVMseparationJackknife(list <Alignment *> AlignmentOne, list <Alignment
     //// When are these files going to be deleted? We need to delete them at the end of this function
     //for (list <Alignment *>::iterator lait = allAlignment.begin();lait!=allAlignment.end();lait++){
     //    string newFileName = tempPrefix;
-    //    newFileName.append("temp_calcSVMseparationJackknife_ID");
+    //    newFileName.append("temp_calcSVMseparationBootstrap_ID");
     //    newFileName.append(randIdString);
     //    newFileName.append("_");
     //    char tempChar[80];
@@ -3172,14 +3170,14 @@ void calcSVMseparationJackknife(list <Alignment *> AlignmentOne, list <Alignment
     //}
     
     // Why should we calculate jackkknifeCount number of reconstructions for each alignment?
-    // For efficiency we should calculate jackknifeCount for each group?  
+    // For efficiency we should calculate bootstrapCount for each group?  
     // WARNING: This might not give us a uniform sampling of the distribution of each group!
     // On the other hand, by taking discrete samples, what does uniform mean? With respect
     // to the continuous distribution?
     // We can essentially pass to getTrees the number of trees to sample from each distribution
 
 
-    //getTreesJackknife(tjp,allAlignment,outputFileNames);
+    //getTreesBootstrap(tjp,allAlignment,outputFileNames);
 
     //list <string> treeFileNamesGroupOne;
     //list <string> treeFileNamesGroupTwo;
@@ -3200,15 +3198,15 @@ void calcSVMseparationJackknife(list <Alignment *> AlignmentOne, list <Alignment
     //    insertOutputFileNamesCount++;
     //}
 
-    getTreesJackknife(tjp,tsp,AlignmentOne,tempFileName);
+    getTreesBootstrap(tjp,tsp,AlignmentOne,tempFileName);
     outputFileNameGroupOne.push_back(tempFileName);
-    getTreesJackknife(tjp,tsp,AlignmentTwo,tempFileName);
+    getTreesBootstrap(tjp,tsp,AlignmentTwo,tempFileName);
     outputFileNameGroupTwo.push_back(tempFileName);
     SampleParameters    new_tsp = tsp;
     new_tsp.SVM_sampleSize = tsp.SVM_resampleSize;
-    getTreesJackknife(tjp,new_tsp,AlignmentOne,tempFileName);
+    getTreesBootstrap(tjp,new_tsp,AlignmentOne,tempFileName);
     outputFileNameGroupOneResample.push_back(tempFileName);
-    getTreesJackknife(tjp,new_tsp,AlignmentTwo,tempFileName);
+    getTreesBootstrap(tjp,new_tsp,AlignmentTwo,tempFileName);
     outputFileNameGroupTwoResample.push_back(tempFileName); 
 
     tsp.numTreesPerFile = -1; // Signifies to sample all trees
@@ -3302,7 +3300,7 @@ void calcSVMseparationMultInd(list <Alignment *> AlignmentOne, list <Alignment *
 
 void calcSVMseparationMultInd(list <string> inputFileNames, MultIndParameters &tmip, SampleParameters &tsvmp, SVM_separationResults &results, int numGroupOne)
 {
-    // Read in alignments then call calcSVMseparationJackknife using alignments
+    // Read in alignments then call calcSVMseparationBootstrap using alignments
     list <Alignment *> AlignmentOne, AlignmentTwo;
 
     int fileGroupOneCount = 0;
@@ -3570,7 +3568,7 @@ void calcSVMseparation(list <string> &treeFileNamesGroupOne, list <string> &tree
     results.secondsToCompute = endTime-startTime;
 }
 
-void getSomeJackknifeAlignment(Alignment &origAlignment, list <Alignment *> &AlignmentOne, list <int> &AlignmentLengths, int colSize)
+void getSomeBootstrapAlignment(Alignment &origAlignment, list <Alignment *> &AlignmentOne, list <int> &AlignmentLengths, int colSize)
 {
     AlignmentOne.clear();
 
@@ -3579,19 +3577,19 @@ void getSomeJackknifeAlignment(Alignment &origAlignment, list <Alignment *> &Ali
     for(;liit!=AlignmentLengths.end();liit++)
     {
         tempAlignment = new Alignment;
-        *tempAlignment = origAlignment.getJackknife(colSize, (int)floor((double)*liit/colSize));
+        *tempAlignment = origAlignment.getBootstrap(colSize, (int)floor((double)*liit/colSize));
         AlignmentOne.push_back(tempAlignment);
     }
 }
 
-void getSomeJackknifeAlignment(Alignment &origAlignment, list <Alignment *> &AlignmentOne, list <Alignment *> &AlignmentTwo, list <int> &AlignmentLengths, int colSize, int groupOneSize)
+void getSomeBootstrapAlignment(Alignment &origAlignment, list <Alignment *> &AlignmentOne, list <Alignment *> &AlignmentTwo, list <int> &AlignmentLengths, int colSize, int groupOneSize)
 {
     AlignmentOne.clear();
     AlignmentTwo.clear();
     list <int>::const_iterator liit = AlignmentLengths.begin();
     
     if (AlignmentLengths.size() < 2){
-        cout << "getSomeJackknifeAlignment called with AlignmentLengths.size() < 2" << endl;
+        cout << "getSomeBootstrapAlignment called with AlignmentLengths.size() < 2" << endl;
         exit(0);
     }
 
@@ -3601,7 +3599,7 @@ void getSomeJackknifeAlignment(Alignment &origAlignment, list <Alignment *> &Ali
     // The first groupOneSize go in AlignmentOne
     while (groupOneCount < groupOneSize){
         tempAlignment = new Alignment;
-        *tempAlignment = origAlignment.getJackknife(colSize, (int)floor((double)*liit/colSize));
+        *tempAlignment = origAlignment.getBootstrap(colSize, (int)floor((double)*liit/colSize));
         AlignmentOne.push_back(tempAlignment);
         liit++;
         groupOneCount++;
@@ -3610,13 +3608,13 @@ void getSomeJackknifeAlignment(Alignment &origAlignment, list <Alignment *> &Ali
     // The rest go in AlignmentTwo
     while (liit != AlignmentLengths.end()){
         tempAlignment = new Alignment;
-        *tempAlignment = origAlignment.getJackknife(colSize, (int)floor((double)*liit/colSize));
+        *tempAlignment = origAlignment.getBootstrap(colSize, (int)floor((double)*liit/colSize));
         AlignmentTwo.push_back(tempAlignment);
         liit++;
     } 
 }
 
-void getSomeJackknifeAlignment(list <Alignment *> &origAlignment, list <Alignment *> &AlignmentOne, list <Alignment *> &AlignmentTwo, list <int> &AlignmentLengths, int colSize, int groupOneSize)
+void getSomeBootstrapAlignment(list <Alignment *> &origAlignment, list <Alignment *> &AlignmentOne, list <Alignment *> &AlignmentTwo, list <int> &AlignmentLengths, int colSize, int groupOneSize)
 { 
     AlignmentOne.clear();
     AlignmentTwo.clear();
@@ -3624,7 +3622,7 @@ void getSomeJackknifeAlignment(list <Alignment *> &origAlignment, list <Alignmen
     list <Alignment *>::iterator lait;
     
     if (AlignmentLengths.size() < 2){
-        cout << "getSomeJackknifeAlignment called with AlignmentLengths.size() < 2" << endl;
+        cout << "getSomeBootstrapAlignment called with AlignmentLengths.size() < 2" << endl;
         exit(0);
     }
 
@@ -3640,7 +3638,7 @@ void getSomeJackknifeAlignment(list <Alignment *> &origAlignment, list <Alignmen
         for (int i=0;i<stopNum;i++) {
             lait++;
         }
-        *tempAlignment = (*lait)->getJackknife(colSize, (int)floor((double)*liit/colSize));
+        *tempAlignment = (*lait)->getBootstrap(colSize, (int)floor((double)*liit/colSize));
         AlignmentOne.push_back(tempAlignment);
         liit++;
         groupOneCount++;
@@ -3654,7 +3652,7 @@ void getSomeJackknifeAlignment(list <Alignment *> &origAlignment, list <Alignmen
         for (int i=0;i<stopNum;i++) {
             lait++;
         }
-        *tempAlignment = (*lait)->getJackknife(colSize, (int)floor((double)*liit/colSize));
+        *tempAlignment = (*lait)->getBootstrap(colSize, (int)floor((double)*liit/colSize));
         AlignmentTwo.push_back(tempAlignment);
         liit++;
     } 
@@ -3663,7 +3661,7 @@ void getSomeJackknifeAlignment(list <Alignment *> &origAlignment, list <Alignmen
 
 
 // Should make option here to not allow any permutation where two groups are as the original
-void getSomeJackknifeAlignmentPermute(list <Alignment *> origAlignment, list <Alignment *> &AlignmentOne, list <Alignment *> &AlignmentTwo, list <int> &AlignmentLengths, int colSize, int groupOneSize, int allowAnyPermutation)
+void getSomeBootstrapAlignmentPermute(list <Alignment *> origAlignment, list <Alignment *> &AlignmentOne, list <Alignment *> &AlignmentTwo, list <int> &AlignmentLengths, int colSize, int groupOneSize, int allowAnyPermutation)
 { 
     AlignmentOne.clear();
     AlignmentTwo.clear();
@@ -3671,7 +3669,7 @@ void getSomeJackknifeAlignmentPermute(list <Alignment *> origAlignment, list <Al
     list <Alignment *>::iterator lait;
     
     if (AlignmentLengths.size() < 2){
-        cout << "getSomeJackknifeAlignment called with AlignmentLengths.size() < 2" << endl;
+        cout << "getSomeBootstrapAlignment called with AlignmentLengths.size() < 2" << endl;
         exit(0);
     }
 
@@ -3693,7 +3691,7 @@ void getSomeJackknifeAlignmentPermute(list <Alignment *> origAlignment, list <Al
         for (int i=0;i<stopNum;i++) {
             lait++;
         }
-        *tempAlignment = (*lait)->getJackknife(colSize, (int)floor((double)*liit/colSize));
+        *tempAlignment = (*lait)->getBootstrap(colSize, (int)floor((double)*liit/colSize));
         AlignmentOne.push_back(tempAlignment);
 
         // Now that we have used alignment *lait, we should remove it from the list
@@ -3712,7 +3710,7 @@ void getSomeJackknifeAlignmentPermute(list <Alignment *> origAlignment, list <Al
         for (int i=0;i<stopNum;i++) {
             lait++;
         }
-        *tempAlignment = (*lait)->getJackknife(colSize, (int)floor((double)*liit/colSize));
+        *tempAlignment = (*lait)->getBootstrap(colSize, (int)floor((double)*liit/colSize));
         AlignmentTwo.push_back(tempAlignment);
 
         // Now that we have used alignment *lait, we should remove it from the list

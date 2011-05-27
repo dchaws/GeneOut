@@ -53,7 +53,7 @@ int main (int argc, char **argv)
     //myalign.printSequenceDivergencePairs();
 
 
-    Alignment bootstrapAlign = myalign.getJackknife(1, numCols);
+    Alignment bootstrapAlign = myalign.getBootstrap(1, numCols);
 
     bootstrapAlign.setOutputFormat(outputFormat);
     cout << bootstrapAlign;

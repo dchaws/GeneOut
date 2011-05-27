@@ -27,10 +27,10 @@ int main (int argc, char **argv)
 
     //cout << "Testing myalign again" << endl;
     //cout << myalign;
-    cout << "Doing jackknife test." << endl;
+    cout << "Doing bootstrap test." << endl;
     srand(time(0));
-    cout << myalign.getJackknife(10,50);
-    cout << myalign.getJackknife(10,100);
+    cout << myalign.getBootstrap(10,50);
+    cout << myalign.getBootstrap(10,100);
 
     cout << "Doing subtaxa test." << endl;
     cout << "myalign has " << myalign.get_ntax() << " taxa." << endl;

@@ -74,9 +74,9 @@ public:
     // This will return an alignment with ntax taxa and k*count columns.
     // It will form it by randomly selecting k contiguous columns and appending them
     // to the result
-    Alignment getJackknife(int k, int count);
+    Alignment getBootstrap(int k, int count);
     // This will do the same as above but count = floor(nchar/k);
-    Alignment getJackknife(int k);
+    Alignment getBootstrap(int k);
 
     // This will go through all elements of alignment and delete any columns
     // that do not contain 'A', 'T', 'C' or 'G'

@@ -68,10 +68,10 @@ int main (int argc, char **argv)
         // Parameters for MPI implementation of mr bayes.
         myMrBayesParam.MPI_np = 4; // Number of processors to use.
 
-    JackknifeParameters myJackknifeParam;
-        myJackknifeParam.jackknifeColSize = 10; // Default
-        myJackknifeParam.jackknifeCount = 1000; // Default
-        myJackknifeParam.alignToTreeCommand = "./run_dnadist_neighbor_mult"; // Default
+    BootstrapParameters myBootstrapParam;
+        myBootstrapParam.bootstrapColSize = 10; // Default
+        myBootstrapParam.bootstrapCount = 1000; // Default
+        myBootstrapParam.alignToTreeCommand = "./run_dnadist_neighbor_mult"; // Default
     
     SampleParameters mySampleParam;
         mySampleParam.doSVM = 1;
@@ -93,7 +93,7 @@ int main (int argc, char **argv)
     // These are all variables used by the local program
     time_t      randGenSeed  = 0;
     int         doMB = 1; // By default, do mr bayes
-    int         doJackknife = 0;      // Default is not to do jackknife
+    int         doBootstrap = 0;      // Default is not to do bootstrap
     int         noTreeCalc = 0; // Do not skip mr bayes calculation.
     int         concatGroups = 0;   // Default is 0, do not concat groups
     int         numGroupOne = 1; // First file is group one and thats all.
@@ -226,37 +226,37 @@ int main (int argc, char **argv)
                     cout << "       Setting: randGenSeed = " << randGenSeed << endl;
                 }
             }
-            else if (tempString == "doJackknife")
+            else if (tempString == "doBootstrap")
             {
-                doJackknife = atoi(argv[++i]); 
-                if (doJackknife == 1){
+                doBootstrap = atoi(argv[++i]); 
+                if (doBootstrap == 1){
                     doMB = 0;
                 }
                 if (DEBUG_OUTPUT >= 0){
-                    cout << "       Setting: doJackknife = " << doJackknife << endl;
+                    cout << "       Setting: doBootstrap = " << doBootstrap << endl;
                 }
                 mySampleParam.burninFormat = 1;
                 mySampleParam.burninNumber = 0;
             }
-            else if (tempString == "jackknifeColSize")
+            else if (tempString == "bootstrapColSize")
             {
-                myJackknifeParam.jackknifeColSize = atoi(argv[++i]); 
+                myBootstrapParam.bootstrapColSize = atoi(argv[++i]); 
                 if (DEBUG_OUTPUT >= 0){
-                    cout << "       Setting: jackknifeColSize = " << myJackknifeParam.jackknifeColSize << endl;
+                    cout << "       Setting: bootstrapColSize = " << myBootstrapParam.bootstrapColSize << endl;
                 }
             }
-            else if (tempString == "jackknifeCount")
+            else if (tempString == "bootstrapCount")
             {
-                myJackknifeParam.jackknifeCount = atoi(argv[++i]); 
+                myBootstrapParam.bootstrapCount = atoi(argv[++i]); 
                 if (DEBUG_OUTPUT >= 0){
-                    cout << "       Setting: jackknifeCount = " << myJackknifeParam.jackknifeCount << endl;
+                    cout << "       Setting: bootstrapCount = " << myBootstrapParam.bootstrapCount << endl;
                 }
             }
             else if (tempString == "alignToTreeCommand")
             {
-                myJackknifeParam.alignToTreeCommand = argv[++i]; 
+                myBootstrapParam.alignToTreeCommand = argv[++i]; 
                 if (DEBUG_OUTPUT >= 0){
-                    cout << "       Setting: alignToTreeCommand = " << myJackknifeParam.alignToTreeCommand << endl;
+                    cout << "       Setting: alignToTreeCommand = " << myBootstrapParam.alignToTreeCommand << endl;
                 }
             }
             else if (tempString == "SVM_sampleSize")
@@ -510,8 +510,8 @@ int main (int argc, char **argv)
 
 
     // Do some error checking
-    if (doMB + doJackknife % 2 == 0){
-        cout << "Must set either doMB or doJackknife, not both" << endl;
+    if (doMB + doBootstrap % 2 == 0){
+        cout << "Must set either doMB or doBootstrap, not both" << endl;
         exit (0);
     }
     if ((int)inputFileNames.size () < numGroupOne){
