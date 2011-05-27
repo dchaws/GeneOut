@@ -1,4 +1,3 @@
-// $Rev: 29 $ $Date: 2009-08-28 14:27:49 -0400 (Fri, 28 Aug 2009) $
 #ifndef JACKKNIFE_H
 #define JACKKNIFE_H 1
 
