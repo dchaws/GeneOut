@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# This is and old script, and the new F84 one should be used.
 # $1 is the nex file that is phylip compatible to read in
 # This will use JC model in dnadist, then call neighbor to find the tree.
 # Lastly this script will clean up the fragmented-multi-line tree outputed
