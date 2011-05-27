@@ -13,6 +13,10 @@
 myPrefix="/tmp/"
 myPrefixSed="\/tmp\/"
 
+
+
+
+
 # Create these files so that we get the expected menu's in dnadist and neighbor.
 rm -f infile
 touch outtree outfile
@@ -23,14 +27,27 @@ then
     exit 0
 fi
 
+
+# Get odd random number
 myrand=$RANDOM
 myrand=${myrand}$RANDOM
-while [ $(( (myrand + 1)/2 )) -eq $(( myrand/2 )) ] || [ -e ${myPrefix}neighbor_input_mult${myrand}$$ ] || [ -e ${myPrefix}dnadist_HKY85-GR4_input_mult${myrand}$$ ]
+while [ $(( (myrand + 1)/2 )) -eq $(( myrand/2 )) ] #|| [ -e ${myPrefix}neighbor_input_mult${myrand}$$ ] || [ -e ${myPrefix}dnadist_HKY85-GR4_input_mult${myrand}$$ ]
 do
     myrand=$RANDOM
     myrand=${myrand}$RANDOM
 done
 
+
+dnadistInputFile=${myPrefix}/dnadist_HKY85-GR4_input_mult_${myrand}$$
+neighborInputFile=${myPrefix}/neighbor_input_mult_${myrand}$$
+
+if [[ -e $dnadistInputFile ]] || [[ -e $neighborInputFile ]]
+then
+    echo "$dnadistInputFile or $neighborInputFile already exists."
+    exit 0
+fi   
+
+# Why copy $1. Just read it where it is.
 cp $1 ${myPrefix}dnadist_tmp_infile_mult${myrand}$$
 
 #echo "My rand $myrand"
