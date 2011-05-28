@@ -1,4 +1,3 @@
-// $Rev: 432 $ $Date: 2009-11-24 01:06:22 -0500 (Tue, 24 Nov 2009) $
 
 /** \file svmresults.cpp */
 #include "svmresults.h"

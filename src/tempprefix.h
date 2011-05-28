@@ -1,4 +1,3 @@
-// $Rev: 342 $ $Date: 2009-11-14 21:34:26 -0500 (Sat, 14 Nov 2009) $
 
 /** \file tempprefix.h */
 #ifndef TEMPPREFIX_H

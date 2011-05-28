@@ -1,4 +1,3 @@
-    // $Rev: 767 $ $Date: 2010-10-10 15:02:33 -0400 (Sun, 10 Oct 2010) $
 
 /** \file geneoutparams.cpp */
 #include "geneoutparams.h"

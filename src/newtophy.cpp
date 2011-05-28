@@ -1,4 +1,3 @@
-// $Rev:  $ $Date:  $
 #include <iostream>
 #include "alignment.h"
 #include <string>

@@ -3,7 +3,6 @@
 //
 // Distributed under the Eclipse Public License v 1.0. See ../LICENSE
 
-// $Rev: 360 $ $Date: 2009-11-16 13:58:51 -0500 (Mon, 16 Nov 2009) $
 
 // matrix.h. Author David Haws
 // Taken from MOCHA package, which is distributed under the Eclipse 1.0 license.

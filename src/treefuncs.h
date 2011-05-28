@@ -1,4 +1,3 @@
-// $Rev: 379 $ $Date: 2009-11-17 22:52:23 -0500 (Tue, 17 Nov 2009) $
 
 /** \file treefuncs.h */
 #ifndef TREEFUNCS_H

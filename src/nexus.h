@@ -1,4 +1,3 @@
-// $Rev: 369 $ $Date: 2009-11-17 14:57:48 -0500 (Tue, 17 Nov 2009) $
 
 /** \file nexus.cpp */
 #ifndef NEXUS_H

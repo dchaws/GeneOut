@@ -1,4 +1,3 @@
-// $Rev: 452 $ $Date: 2009-12-01 16:34:16 -0500 (Tue, 01 Dec 2009) $
 
 /** \file mww.cpp */
 #include "mww.h"

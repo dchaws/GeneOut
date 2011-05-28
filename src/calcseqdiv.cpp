@@ -1,4 +1,3 @@
-// $Rev: 304 $ $Date: 2009-11-04 21:28:04 -0500 (Wed, 04 Nov 2009) $
 #include <iostream>
 #include "alignment.h"
 

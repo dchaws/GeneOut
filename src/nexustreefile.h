@@ -1,4 +1,3 @@
-// $Rev: 359 $ $Date: 2009-11-15 23:57:12 -0500 (Sun, 15 Nov 2009) $
 
 /** \file nexustreefile.h */
 #ifndef NEXUSTREEFILE_H

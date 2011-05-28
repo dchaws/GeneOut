@@ -2,7 +2,6 @@
 // of California at Davis, IBM, Inc. All rights reserved.
 //
 
-// $Rev: 359 $ $Date: 2009-11-15 23:57:12 -0500 (Sun, 15 Nov 2009) $
 
 /** \file matrix.h */
 //. Author David Haws

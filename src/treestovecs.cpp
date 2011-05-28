@@ -1,4 +1,3 @@
-// $Rev: 808 $ $Date: 2011-04-10 13:32:07 -0400 (Sun, 10 Apr 2011) $
 
 /// \file treestovecs.cpp 
 

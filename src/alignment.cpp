@@ -1,4 +1,3 @@
-// $Rev: 807 $ $Date: 2011-04-10 13:21:55 -0400 (Sun, 10 Apr 2011) $
 #include "alignment.h"
 #include "debugoutput.h"
 #include "nexus.h"

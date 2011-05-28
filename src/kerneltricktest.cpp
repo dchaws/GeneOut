@@ -1,4 +1,3 @@
-// $Rev: 402 $ $Date: 2009-11-19 23:10:48 -0500 (Thu, 19 Nov 2009) $
 
 /// \file kerneltricktest.cpp 
 

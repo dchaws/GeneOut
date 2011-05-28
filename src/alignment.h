@@ -1,4 +1,3 @@
-// $Rev: 774 $ $Date: 2011-02-09 17:53:15 -0500 (Wed, 09 Feb 2011) $
 
 /** \file alignment.h */
 #ifndef ALIGNMENTS_H

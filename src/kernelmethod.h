@@ -1,4 +1,3 @@
-// $Rev: 776 $ $Date: 2011-02-10 12:00:19 -0500 (Thu, 10 Feb 2011) $
 
 /** \file kernelmethod.h */
 #ifndef KERNELMETHOD_H

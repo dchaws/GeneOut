@@ -1,4 +1,3 @@
-// $Rev: 358 $ $Date: 2009-11-15 20:59:40 -0500 (Sun, 15 Nov 2009) $
 
 /// \file mwwtest.cpp 
 

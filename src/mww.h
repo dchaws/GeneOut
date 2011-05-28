@@ -1,4 +1,3 @@
-// $Rev: 360 $ $Date: 2009-11-16 13:58:51 -0500 (Mon, 16 Nov 2009) $
 
 /** \file mww.h */
 #ifndef MWW_H

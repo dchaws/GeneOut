@@ -1,4 +1,3 @@
-// $Rev: 433 $ $Date: 2009-11-24 01:44:21 -0500 (Tue, 24 Nov 2009) $
 
 /** \file svmresults.h */
 #ifndef SVMRESULTS_H

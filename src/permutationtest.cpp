@@ -1,4 +1,3 @@
-// $Rev: 545 $ $Date: 2010-03-07 18:52:38 -0500 (Sun, 07 Mar 2010) $
 
 /// \file permutationtest.cpp 
 

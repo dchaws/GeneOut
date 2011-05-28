@@ -1,4 +1,3 @@
-// $Rev: 708 $ $Date: 2010-09-01 18:48:45 -0400 (Wed, 01 Sep 2010) $
 
 /// \file geneoutparameterstest.cpp 
 

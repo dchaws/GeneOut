@@ -1,4 +1,3 @@
-// $Rev: 757 $ $Date: 2010-09-22 15:39:42 -0400 (Wed, 22 Sep 2010) $
 
 /** \file sampleparams.h */
 #ifndef SAMPLEPARAMS_H
