@@ -549,7 +549,7 @@ void GeneOutParameters::init ()
     tempPrefix = "";
     BSStepOne = 0;    // Default is to use the original alignments
     indBootstrap = 1; // 0 use concatenated alignments. 1 means use randomly selected alignments to bootstrap data.
-    permuteOrig = 0;
+    permuteOrig = 1; // 1 means to permute all the alignemnts when doing the permutation test to estimate the null.
     allowAnyPermuation = 0; //1 means allow anything. 0 means dissallow new group one to be all from group one.
 }
 

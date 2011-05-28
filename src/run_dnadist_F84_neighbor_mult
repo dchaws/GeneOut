@@ -93,11 +93,15 @@ then
     
     
     # This might be OS specific. Especially the \r part. Works on Mac OS X
-    tempAwkOut=`awk 'BEGIN {treeNumber=0} {all=all $0} /;/ {treeNumber++;print "tree rep_" treeNumber " = " all ;all=""}' ${myPrefix}neighbor_tmp_outtree_mult${myrand}$$`
-    if [ "x$tempAwkOut" = "x" ]
+#    tempAwkOut=`awk 'BEGIN {treeNumber=0} {all=all $0} /;/ {treeNumber++;print "tree rep_" treeNumber " = " all ;all=""}' ${myPrefix}neighbor_tmp_outtree_mult${myrand}$$`
+#    if [ "x$tempAwkOut" = "x" ]
+#    then
+#        awkFailed=1
+#        #echo "NOTHING OUTPUTED BY AWK COMMAND"
+#    fi
+    if [[ ! -e ${myPrefix}neighbor_tmp_outtree_mult${myrand}$$ ]] 
     then
         awkFailed=1
-        #echo "NOTHING OUTPUTED BY AWK COMMAND"
     fi
 
     if [ $awkFailed -eq 1 ] && [ $saveFailFiles -eq 1 ]

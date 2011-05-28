@@ -191,7 +191,7 @@ int main (int argc, char **argv)
         srand(time(&myGeneOutParam.randGenSeed));
     }
 
-    if (DEBUG_OUTPUT >= 0){
+    if (DEBUG_OUTPUT >= 1){
         cout << "Input files:" << endl;
         for (list<string>::const_iterator lit=myGeneOutParam.inputFileNames.begin();lit!=myGeneOutParam.inputFileNames.end();lit++){
              cout << *lit << endl; 
@@ -418,6 +418,7 @@ int main (int argc, char **argv)
     //  `--. \ __/ _` | __|   | |/ _ \/ __| __|
     // /\__/ / || (_| | |_    | |  __/\__ \ |_ 
     // \____/ \__\__,_|\__|   \_/\___||___/\__|
+    // This is the permutation test described in our paper. --Dave 5/27/11
     else if (myGeneOutParam.statTest == 1) // STAT TEST
     {
         if (myGeneOutParam.noTreeCalc != 1 && myGeneOutParam.geneStatTest != 1){
@@ -440,10 +441,10 @@ int main (int argc, char **argv)
                 int firstRun = 1;
                 SVM_separationResults averagedResults; //Construct makes all non-matrix items 0.
                 if (DEBUG_OUTPUT >= 0){
-                    cout << "   Calculating primary separation value between group one and group two." << endl;
+                    cout << "    Calculating primary separation value between group one and group two." << endl;
                 }
                 if (DEBUG_OUTPUT >= 0){
-                    cout << "Performing " << myGeneOutParam.numInitCalc << " initial separation calculations and averaging." << endl;
+                    cout << "    Performing " << myGeneOutParam.numInitCalc << " initial separation calculations and averaging." << endl;
                 }
                 // Get a cutoff/baseline, pc.
                 // Why am I repeatedly calling Mr Bayes with the same input. If we bootstrap the alignments in step 2,
@@ -459,7 +460,9 @@ int main (int argc, char **argv)
                         getSomeBootstrapAlignment(*AlignmentTwoConcat,AlignmentTwo,inputAlignmentsLengthsTwo,myGeneOutParam.BootstrapParam.bootstrapColSize);
                     }
                     else {
-                        cout << "   Using original alignments." << endl;
+                        if (DEBUG_OUTPUT >= 1){
+                            cout << "   Using original alignments." << endl;
+                        }
                     }
                     // Generate two new alignments from allConcatMinusFirst and try svm.
                     // Dangerous, because we cant see any output, but necessary.
@@ -491,18 +494,16 @@ int main (int argc, char **argv)
                         averagedResults += mySeparationResults;
                     }
                     int initPrimSepEndTime = time(0);
-                    if (DEBUG_OUTPUT >= 0){
-                        cout << "   " << initPrimSepEndTime - initPrimSepStartTime << " seconds." << endl;
                         //cout << "   " << mySeparationResults.secondsToCompute << " seconds." << endl;
-                    }
 
                     //double thisInitSeparation = 100*(double)(groupOneCount + groupTwoCount)/(2*myGeneOutParam.SampleParam.SVM_resampleSize);
                     double thisInitSeparation = mySeparationResults.resampleSeparationPercentage;
                     if (DEBUG_OUTPUT >= 0){
-                        cout << "       groupOneCount " << mySeparationResults.resampleGroupOneCount << endl;
-                        cout << "       groupTwoCount " << mySeparationResults.resampleGroupTwoCount << endl;
+                        cout << "       groupOneCount: " << mySeparationResults.resampleGroupOneCount;
+                        cout << "   groupTwoCount: " << mySeparationResults.resampleGroupTwoCount;
                         //cout << "       Separation percentage: " << setw(6) << 100*(double)(groupOneCount + groupTwoCount)/(2*myGeneOutParam.SampleParam.SVM_resampleSize) << endl;
-                        cout << "       This Separation percentage(" << i + 1 << "): " << setw(6) << thisInitSeparation << endl;
+                        cout << "   Separation percentage(" << i + 1 << "): " << setw(4) << thisInitSeparation;
+                        cout << "   [" << initPrimSepEndTime - initPrimSepStartTime << "s]" << endl;
                         if (myGeneOutParam.SampleParam.doDiffMeans == 1){
                             mySeparationResults.print("This Initial");
                             if (myGeneOutParam.SampleParam.projectSVD == 1){
@@ -526,7 +527,7 @@ int main (int argc, char **argv)
                 averagedResults /= myGeneOutParam.numInitCalc;
                 initSeparation /= myGeneOutParam.numInitCalc;
                 if (DEBUG_OUTPUT >= 0){
-                    cout << "Averaged Initial Separation Percentage: " << setw(6) << initSeparation << endl;
+                    cout << "    Averaged Initial Separation Percentage: " << setw(6) << initSeparation << endl;
                     if (myGeneOutParam.SampleParam.doDiffMeans == 1){
                         averagedResults.print("Averaged Initial");
                         if (myGeneOutParam.SampleParam.projectSVD == 1){
@@ -545,7 +546,7 @@ int main (int argc, char **argv)
             
             if (DEBUG_OUTPUT >= 0){
                 cout << endl;
-                cout << "Now performing " << myGeneOutParam.numStatTests << " statistical tests." << endl;
+                cout << "    Now performing " << myGeneOutParam.numStatTests << " permuation tests." << endl;
             }
 
             Alignment *tempAlignment;
@@ -581,20 +582,20 @@ int main (int argc, char **argv)
                 }
                 else {
                     if (myGeneOutParam.indBootstrap == 0 && myGeneOutParam.permuteOrig == 0) {
-                        if (DEBUG_OUTPUT >= 0){
+                        if (DEBUG_OUTPUT >= 1){
                             cout << "Bootstrapping alignments from concat of second group of alignments." << endl;
                         }
                         getSomeBootstrapAlignment(*AlignmentTwoConcat,AlignmentOne,AlignmentTwo,inputAlignmentsLengths,myGeneOutParam.BootstrapParam.bootstrapColSize,myGeneOutParam.numGroupOne);
                     }
                     if (myGeneOutParam.indBootstrap == 1 && myGeneOutParam.permuteOrig == 0) {
-                        if (DEBUG_OUTPUT >= 0){
+                        if (DEBUG_OUTPUT >= 1){
                             cout << "Bootstrapping alignments from second group of alignments." << endl;
                         }
                         getSomeBootstrapAlignment(origAlignmentTwo,AlignmentOne,AlignmentTwo,inputAlignmentsLengths,myGeneOutParam.BootstrapParam.bootstrapColSize,myGeneOutParam.numGroupOne);
                     }
                     if (myGeneOutParam.permuteOrig == 1) {
-                        if (DEBUG_OUTPUT >= 0){
-                            cout << "Permuting all alignments and bootstrapping to appropriate size." << endl;
+                        if (DEBUG_OUTPUT >= 1){
+                            cout << "    Permuting all alignments and bootstrapping to appropriate size." << endl;
                         }
                         getSomeBootstrapAlignmentPermute(origInputAlignment,AlignmentOne,AlignmentTwo,inputAlignmentsLengths,myGeneOutParam.BootstrapParam.bootstrapColSize,myGeneOutParam.numGroupOne,myGeneOutParam.allowAnyPermuation);
                     }
@@ -629,11 +630,11 @@ int main (int argc, char **argv)
                 
                 int innerStatTestEndTime = time(0);
                 if (DEBUG_OUTPUT >= 0){
-                    cout << endl;
-                    cout << "       groupOneCount " << mySeparationResults.resampleGroupOneCount << endl;
-                    cout << "       groupTwoCount " << mySeparationResults.resampleGroupTwoCount << endl;
-                    cout << "       Separation percentage: " << setw(6) << thisSeparation << endl;
-                    cout << "   " << innerStatTestEndTime - innerStatTestStartTime << " seconds. Stat test " << i+1 << endl;
+                    cout << "       groupOneCount: " << mySeparationResults.resampleGroupOneCount;
+                    cout << "   groupTwoCount: " << mySeparationResults.resampleGroupTwoCount;
+                    cout << "   Separation percentage(" << i+1 << "): " << setw(4) << thisSeparation;
+                    cout << "  [" << innerStatTestEndTime - innerStatTestStartTime << "s]";
+                    cout << "   p-value: " << pval/(i+1) << endl;
                     if (myGeneOutParam.SampleParam.doDiffMeans == 1){
                         mySeparationResults.print("This Stat Test");
                         if (myGeneOutParam.SampleParam.projectSVD == 1){
@@ -654,27 +655,27 @@ int main (int argc, char **argv)
                 averageSeparation += thisSeparation;
                 sepValuesTwo.push_back(thisSeparation);
                 if (initSeparation <= thisSeparation){
-                    if (DEBUG_OUTPUT >= 0){
-                        cout << "   Separation value higher than or equal to initSeparation." << endl;
+                    if (DEBUG_OUTPUT >= 1){
+                        cout << "           Separation value higher than or equal to initSeparation." << endl;
                         cout << "       pval++" << endl;
                     }
                     pval++;
                 }
                 else {
-                    if (DEBUG_OUTPUT >= 0){
-                        cout << "   Separation value lower than initSeparation." << endl;
+                    if (DEBUG_OUTPUT >= 1){
+                        cout << "           Separation value lower than initSeparation." << endl;
                     }
                 }
-                if (DEBUG_OUTPUT >= 0){
-                    cout << "   ### Current(" << i+1 << ") pval = " << setw(3) << pval/(i+1) << " ###" << endl;
+                if (DEBUG_OUTPUT >= 1){
+                    cout << "                   ### Current(" << i+1 << ") pval = " << setw(3) << pval/(i+1) << " ###" << endl;
                 }
 
             }
             averageSeparation/= myGeneOutParam.numStatTests;
             averagedResults /= myGeneOutParam.numStatTests;
             if (DEBUG_OUTPUT >= 0){
-                cout << "pval/myGeneOutParam.numStatTests = " << pval/myGeneOutParam.numStatTests << endl;
-                cout << "p-value: " << pval/myGeneOutParam.numStatTests << endl;
+                //cout << "pval/myGeneOutParam.numStatTests = " << pval/myGeneOutParam.numStatTests << endl;
+                cout << "Final p-value: " << pval/myGeneOutParam.numStatTests << endl;
                 cout << "Averaged Separation Percentage: " << averageSeparation << endl;
                 if (myGeneOutParam.SampleParam.doDiffMeans == 1){
                     averagedResults.print("Averaged Stat Test");
@@ -778,7 +779,7 @@ int main (int argc, char **argv)
                         cout << "       groupOneCount " << mySeparationResults.resampleGroupOneCount << endl;
                         cout << "       groupTwoCount " << mySeparationResults.resampleGroupTwoCount << endl;
                         //cout << "       Separation percentage: " << setw(6) << 100*(double)(groupOneCount + groupTwoCount)/(2*myGeneOutParam.SampleParam.SVM_resampleSize) << endl;
-                        cout << "       This Separation percentage(" << i + 1 << "): " << setw(6) << thisInitSeparation << endl;
+                        cout << "       Separation percentage(" << i + 1 << "): " << setw(6) << thisInitSeparation << endl;
                         if (myGeneOutParam.SampleParam.doDiffMeans == 1){
                             mySeparationResults.print("This Initial");
                             if (myGeneOutParam.SampleParam.projectSVD == 1){
@@ -1004,7 +1005,7 @@ int main (int argc, char **argv)
                         cout << "       groupOneCount " << mySeparationResults.resampleGroupOneCount << endl;
                         cout << "       groupTwoCount " << mySeparationResults.resampleGroupTwoCount << endl;
                         //cout << "       Separation percentage: " << setw(6) << 100*(double)(groupOneCount + groupTwoCount)/(2*myGeneOutParam.SampleParam.SVM_resampleSize) << endl;
-                        cout << "       This Separation percentage(" << i + 1 << "): " << setw(6) << thisInitSeparation << endl;
+                        cout << "       Separation percentage(" << i + 1 << "): " << setw(4) << thisInitSeparation << endl;
                         if (myGeneOutParam.SampleParam.doDiffMeans == 1){
                             mySeparationResults.print("This Initial");
                             if (myGeneOutParam.SampleParam.projectSVD == 1){
@@ -1018,7 +1019,7 @@ int main (int argc, char **argv)
                 initSeparation /= myGeneOutParam.numInitCalc;
                 averagedResults /= myGeneOutParam.numInitCalc;
                 if (DEBUG_OUTPUT >= 0){
-                    cout << "Averaged Initial Separation percentage: " << setw(6) << initSeparation << endl;
+                    cout << "Averaged Initial Separation percentage: " << setw(4) << initSeparation << endl;
                     if (myGeneOutParam.SampleParam.doDiffMeans == 1){
                         averagedResults.print("Averaged Initial");
                         if (myGeneOutParam.SampleParam.projectSVD == 1){
@@ -1072,7 +1073,7 @@ int main (int argc, char **argv)
                     cout << endl;
                     cout << "       groupOneCount " << mySeparationResults.resampleGroupOneCount << endl;
                     cout << "       groupTwoCount " << mySeparationResults.resampleGroupTwoCount << endl;
-                    cout << "       Separation percentage: " << setw(6) << thisSeparation << endl;
+                    cout << "       Separation percentage: " << setw(4) << thisSeparation << endl;
                     cout << "   " << innerStatTestEndTime - innerStatTestStartTime << " seconds. Stat test " << i+1 << endl;
                     if (myGeneOutParam.SampleParam.doDiffMeans == 1){
                         mySeparationResults.print("This Stat Test");

@@ -3,6 +3,12 @@
 #include "newickworker.h"
 #include "kernelmethod.h"
 
+// This is to supress the output of libsvm
+extern void (*svm_print_string) (const char *);
+
+void print_null(const char *s) {}
+
+
 using namespace::std;
 
 // Used to track the recursion level for NewickToDistanceMatrix
@@ -3326,6 +3332,9 @@ void calcSVMseparation(list <string> &treeFileNamesGroupOne, list <string> &tree
 void calcSVMseparation(list <string> &treeFileNamesGroupOne, list <string> &treeFileNamesGroupTwo,list <string> &treeFileNamesGroupOneResample, list <string> &treeFileNamesGroupTwoResample, SampleParameters &tsp, SVM_separationResults &results)
 {
     time_t startTime = time(0);
+
+    svm_print_string = &print_null;
+
     list <svm_node *> groupOne;
     list <svm_node *> groupTwo;
     // If SVM_sampleSize == -1 or SVM_resampleSize == -1, then autocalculate based off one of the trees
