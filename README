@@ -1,3 +1,5 @@
 GeneOut software for the paper "A support vector machine based test for incongruence between sets of trees in tree space"
 
 This project is now hosted on the git server of git2.as.uky.edu and on github.
+
+Requires libsvm
