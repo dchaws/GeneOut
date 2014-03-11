@@ -3,3 +3,27 @@ GeneOut software for the paper "A support vector machine based test for incongru
 This project is now hosted on the git server of git2.as.uky.edu and on github.
 
 Requires libsvm
+http://www.csie.ntu.edu.tw/~cjlin/libsvm/
+
+
+Download libsvm version 2.9 from http://www.csie.ntu.edu.tw/~cjlin/libsvm/oldfiles/
+
+
+tar zxf libsvm-2.9.tar.gz
+cd libsvm-2.9
+make  # or make lib
+
+# Move libsvm.so.* and svm.h to a location such as ~/local/lib and ~/local/include respectively.
+mkdir -p ~/local/lib
+mkdir -p ~/local/include
+cp libsvm.so.1 ~/local/lib
+cp svm.h ~/local/include
+# create symbolic link
+ln -s ~/local/lib/libsvm.so.1 ~/local/lib/libsvm.so
+
+
+
+Specify libsvm directory.
+./configure --with-svm-prefix=/Users/haws/local/
+
+
