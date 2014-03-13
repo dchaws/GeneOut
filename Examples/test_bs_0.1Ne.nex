@@ -1,0 +1,10 @@
+begin multsvmsep;
+    method bs;
+    distmethod bs;
+    bsp colsize=10 count=1000;
+    svmp samplesize=168 resamplesize=336;
+    testparameters numinitcalc=10 numstattests=10;
+    tempprefix "/tmp/";
+    grouponefiles "../Examples/Alignments_SD_0.1Ne/Species1/GeneFromSpecies1Set1_Mesq_0.nex";
+    grouptwofiles "../Examples/Alignments_SD_0.1Ne/Species2/GeneFromSpecies2Set1_Mesq_0.nex" "../Examples/Alignments_SD_0.1Ne/Species2/GeneFromSpecies2Set1_Mesq_1.nex" "../Examples/Alignments_SD_0.1Ne/Species2/GeneFromSpecies2Set1_Mesq_2.nex" "../Examples/Alignments_SD_0.1Ne/Species2/GeneFromSpecies2Set1_Mesq_3.nex" "../Examples/Alignments_SD_0.1Ne/Species2/GeneFromSpecies2Set1_Mesq_4.nex" "../Examples/Alignments_SD_0.1Ne/Species2/GeneFromSpecies2Set1_Mesq_5.nex" "../Examples/Alignments_SD_0.1Ne/Species2/GeneFromSpecies2Set1_Mesq_6.nex" "../Examples/Alignments_SD_0.1Ne/Species2/GeneFromSpecies2Set1_Mesq_7.nex" "../Examples/Alignments_SD_0.1Ne/Species2/GeneFromSpecies2Set1_Mesq_8.nex" "../Examples/Alignments_SD_0.1Ne/Species2/GeneFromSpecies2Set1_Mesq_9.nex";
+end;
