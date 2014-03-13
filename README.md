@@ -236,13 +236,15 @@ The template input files for 'dnadist' are
 * dnadist_HKY85-GR4_input_mult_TEMPLAT
 * dnadist_JC_input_mult_TEMPLATE	
 
-For example, to use run_dnadist_JC_neighbor_mult for phylogenetic analysis, add the command:
+For example, to use run_dnadist_JC_neighbor_mult for phylogenetic analysis, add the command
+aligntotreecommand to the bsp command.
 
     bsp colsize=10 count=1000 aligntotreecommand="./run_dnadist_JC_neighbor_mult";
 
 The script run_phyml_mult will use phyml to perform the phylogenetic analysis.
 
-For example, to use run_phyml_mult for phylogenetic analysis, add the command:
+For example, to use run_phyml_mult for phylogenetic analysis, add the command
+aligntotreecommand to the bsp command.
 
     bsp colsize=10 count=1000 aligntotreecommand="./run_phyml_mult";
 
