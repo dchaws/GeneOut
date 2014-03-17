@@ -249,3 +249,13 @@ aligntotreecommand to the bsp command.
     bsp colsize=10 count=1000 aligntotreecommand="./run_phyml_mult";
 
 to the nexus control file.
+
+
+## run_phyml_mult
+
+By default this script tries to run the command "PhyML_3.0". If another version is installed
+edit the file run_phyml_mult and change 6th line:
+
+    $PhyML="PhyML_3.0"
+
+to the appropriate command.
